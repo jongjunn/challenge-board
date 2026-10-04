@@ -117,6 +117,7 @@ window.BOARD = {
     ]}
   ],
   "log": [
+    { "date": "2026-10-05", "who": "Claude", "text": "GitHub Pages 공개 + 5분마다 자동 배포" },
     { "date": "2026-10-05", "who": "Codex", "text": "프리시즌 실행계획 구체화 · PitchLens는 Day 1까지 대기 · 구독자 투표 삭제" },
     { "date": "2026-10-05", "who": "Claude", "text": "대시보드를 폴더 파일(dashboard/data.js) 하나로 통합" },
     { "date": "2026-10-04", "who": "Codex", "text": "프리시즌 운영 기준 작성 · 12/31 마감 삭제 → Day 1부터 365일" },
