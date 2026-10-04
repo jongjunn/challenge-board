@@ -31,6 +31,7 @@
   3. `log` 맨 위에 `{ "date", "who": "Codex|Claude|박종준", "text" }` 한 줄 추가
   4. 사업은 `projects`에 추가. `status`는 active · waiting · paused · done · dead 중 하나. 시작 카드는 `card`, 끝 카드는 `result`
   5. 모르는 숫자는 지어내지 말고 "미집계"
+- **공개 페이지:** https://jongjunn.github.io/challenge-board/ — 5분마다 자동 배포됨 (launchd `com.jun.challengeboard` → `./dashboard/deploy.sh`, 바뀐 게 없으면 아무것도 안 함). data.js와 docs 목록의 문서가 공개로 올라가니, 공개하면 안 되는 문서는 docs에 넣지 말 것.
 - 고친 뒤 확인: `node -e "global.window={};require('./dashboard/data.js');console.log(Object.keys(window.BOARD))"`
 
 ## 문서 작성 스타일
