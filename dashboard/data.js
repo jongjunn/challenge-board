@@ -3,7 +3,7 @@
 // 고치면 updated 날짜를 바꾸고 log 맨 위에 한 줄 추가.
 window.BOARD = {
   "meta": {
-    "channel": "박종준",
+    "channel": "JONGJUN",
     "tagline": "되고 싶던 삶, 회사 가기 전에 한 번은 제대로 해본다.",
     "start": "100만원",
     "goal": "순자산 10억",
@@ -130,6 +130,7 @@ window.BOARD = {
     ]}
   ],
   "log": [
+    { "date": "2026-10-05", "who": "Codex", "text": "채널명 JONGJUN 확정 · 영문 손글씨 프로필 최종본 저장" },
     { "date": "2026-10-05", "who": "Codex", "text": "손글씨 프로필 최종본 확정 · 중간 굵기 버전을 assets/channel-profile-handwriting-final.png로 저장" },
     { "date": "2026-10-05", "who": "Claude", "text": "LinkFlow(도어락 통합 연동) 후보 등록 · Codex 시장조사 시작" },
     { "date": "2026-10-05", "who": "Codex", "text": "흰 원 안 손글씨 박종준 프로필 방향 확정 · 시안 v1 생성" },
