@@ -107,7 +107,7 @@ window.BOARD = {
       "status": "active",
       "stages": ["포지셔닝·BM", "프리시즌 실행계획", "1화 실제 대본", "채널·계정 세팅", "제작 테스트"],
       "current": 1,
-      "next": "손글씨 프로필 시안 확정 → 배너·소개문구 → 썸네일·카드 순으로 채널 브랜드 세팅",
+      "next": "확정한 손글씨 프로필 적용 → 배너·소개문구 → 썸네일·카드 순으로 채널 브랜드 세팅",
       "due": "",
       "card": null,
       "result": null
@@ -130,6 +130,7 @@ window.BOARD = {
     ]}
   ],
   "log": [
+    { "date": "2026-10-05", "who": "Codex", "text": "손글씨 프로필 최종본 확정 · 중간 굵기 버전을 assets/channel-profile-handwriting-final.png로 저장" },
     { "date": "2026-10-05", "who": "Claude", "text": "LinkFlow(도어락 통합 연동) 후보 등록 · Codex 시장조사 시작" },
     { "date": "2026-10-05", "who": "Codex", "text": "흰 원 안 손글씨 박종준 프로필 방향 확정 · 시안 v1 생성" },
     { "date": "2026-10-05", "who": "Codex", "text": "프리시즌에 채널명·핸들·프로필·배너·소개·썸네일·기본 설정 체크 추가" },
