@@ -35,7 +35,7 @@ window.BOARD = {
       "status": "waiting",
       "stages": ["시장 조사", "개발사 20곳 연락", "첫 유료 연동", "API로 묶기", "판정"],
       "current": 0,
-      "next": "Codex 시장조사 결과 검토 (research/linkflow_시장조사.md)",
+      "next": "원안(역분석) 폐기 · 솔리티 공식 API 1계열 × 숙박 임시 PIN 파일럿으로 축소 · Day 1 후 솔리티 문의부터",
       "due": "",
       "card": { "question": "무인공간 솔루션 개발사가 도어락 연동 외주에 돈을 낼까?", "deadline": "시작 후 4주", "kill": "20곳 중 유료 의향 0곳, 또는 공식 API로 국내 주요 도어락 연동 불가" },
       "result": null
