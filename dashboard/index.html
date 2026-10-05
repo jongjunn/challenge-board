@@ -126,6 +126,20 @@ dl.kv dt{color:var(--muted)} dl.kv dd{margin:0}
 .endcard{background:linear-gradient(180deg,#F6EAE7,#F0E0DC)}
 .chart svg{width:100%;height:170px;display:block;overflow:visible}
 .chart .ax{font-size:11px;fill:var(--muted)}
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+.tbl th{font-weight:500;color:var(--muted);font-size:12px;text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+.tbl td{padding:10px;border-bottom:1px solid var(--line)}
+.tbl tr:last-child td{border-bottom:0}
+.tbl .r{text-align:right}
+.tbl tr.me td{font-weight:600}
+.pos{color:var(--ok)} .neg{color:var(--dead)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:10px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.acts{margin:0;padding-left:18px;font-size:13px;color:var(--ink-2)} .acts li{margin:4px 0}
+.kv3{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:14px}
+.kv3 div{background:var(--card);border-radius:14px;padding:12px 14px;box-shadow:var(--hi)}
+.kv3 small{color:var(--muted);font-size:12px} .kv3 b{display:block;font-family:"Inter";font-weight:400;font-size:24px;margin-top:4px}
+.scrollx{overflow-x:auto}
 
 /* checklist / log */
 .check{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:14px;background:var(--card);box-shadow:var(--hi);margin:8px 0;font-size:14.5px}
@@ -198,6 +212,7 @@ dl.kv dt{color:var(--muted)} dl.kv dd{margin:0}
 <div class="scrim" id="scrim"></div>
 
 <script src="data.js" id="datajs"></script>
+<script src="bot.js" onerror="window.BOT=null"></script>
 <script>
 let B = window.BOARD;
 const STN = {active:"진행중", waiting:"대기", paused:"보류", done:"완료", dead:"사망"};
@@ -223,7 +238,7 @@ const I = {
 };
 const svg = (k, cls="") => `<svg viewBox="0 0 24 24" class="${cls}" aria-hidden="true">${I[k]}</svg>`;
 const route = () => (location.hash.replace(/^#\/?/, "") || "").split("/").map(decodeURIComponent);
-let tab = "all", q = "", docQ = "";
+let tab = "all", q = "", docQ = "", botTab = "fut";
 
 /* ---------- shell ---------- */
 function renderRail(r){
@@ -341,7 +356,45 @@ function detail(id){
       </div>
       <div class="box"><h3>단계 <span class="st ${esc(p.status)}" style="float:right">${STN[p.status] || ""}</span></h3>
         <div class="steps">${st.map((s,i) => `<div class="step ${i < c ? "d" : i === c ? "c" : ""}"><span class="n num">${i < c ? "✓" : i+1}</span><span>${esc(s)}</span></div>`).join("")}</div></div>
-    </div>`;
+    </div>${p.id === "coinbot" && window.BOT ? botPanel() : ""}`;
+}
+const COLORS = ["#1E1E1E","#3E9C6A","#C2483B","#A97C1E","#4F6BD8","#8E5BD0","#7B7B7A","#D07A2E","#2A9BB0","#B54E8C"];
+function multiSVG(lines){
+  const all = lines.flatMap(l => l.series.map(x => x.value)), dates = [...new Set(lines.flatMap(l => l.series.map(x => x.date)))].sort();
+  if (dates.length < 2) return "";
+  const W = 620, H = 220, lo = Math.min(...all), hi = Math.max(...all), pad = (hi - lo) * .1 || 1;
+  const X = d => 30 + dates.indexOf(d) * (W - 50) / (dates.length - 1), Y = v => 10 + (H - 40) * (1 - (v - lo + pad) / (hi - lo + 2*pad));
+  const tick = Math.max(1, Math.ceil(dates.length / 6));
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="대회 평가금 추이">
+    ${lines.map((l,i) => `<polyline fill="none" stroke="${COLORS[i % COLORS.length]}" stroke-width="${l.key === "bot" ? 2.6 : 1.3}" stroke-linejoin="round" points="${l.series.map(x => `${X(x.date)},${Y(x.value)}`).join(" ")}"/>`).join("")}
+    ${dates.map((d,i) => i % tick && i !== dates.length-1 ? "" : `<text class="ax" x="${X(d)}" y="${H-6}" text-anchor="middle">${md(d)}</text>`).join("")}</svg>
+    <div class="legend">${lines.map((l,i) => `<span><i style="background:${COLORS[i % COLORS.length]}"></i>${esc(l.name)}</span>`).join("")}</div>`;
+}
+const fmt = v => v == null || v === "" ? "—" : Number(v).toLocaleString("en-US", {maximumFractionDigits: 4});
+function botPanel(){
+  const T = window.BOT, f = T.futures, s = T.spot, t = T.tournament;
+  const tabs = [["fut","데모 선물 봇"],["spot","현물 BTC 봇"],["tour","투자대회"]];
+  let body = "";
+  if (botTab === "fut"){
+    const last = f.series.at(-1)?.value, chg = f.start && last ? (last / f.start - 1) * 100 : null;
+    body = `<div class="kv3"><div><small>지갑</small><b>${fmt(last)}</b></div><div><small>시작 대비</small><b class="${chg >= 0 ? "pos" : "neg"}">${chg == null ? "—" : (chg >= 0 ? "+" : "") + chg.toFixed(2) + "%"}</b></div>
+      <div><small>보유 포지션</small><b>${f.positions.length}</b></div><div><small>BTC 추세</small><b>${esc(f.btc_votes ?? "—")}/6</b></div></div>
+      ${f.series.length > 1 ? `<div class="box chart" style="margin-bottom:14px"><h3>데모 선물 지갑 (USDT) · 마지막 실행 ${esc(f.last)} UTC</h3>${chartSVG(f.series)}</div>` : ""}
+      <div class="box scrollx" style="margin-bottom:14px"><h3>지금 들고 있는 포지션</h3><table class="tbl"><tr><th>코인</th><th>방향</th><th class="r">진입가</th><th class="r">손절가</th><th class="r">익절</th><th>진입일</th></tr>
+        ${f.positions.map(x => `<tr><td>${esc(x.symbol)}</td><td>${esc(x.side)}</td><td class="r num">${fmt(x.entry)}</td><td class="r num">${fmt(x.stop)}</td><td class="r num">${esc(x.tp)}</td><td class="num">${esc(x.opened ? md(x.opened) : "")}</td></tr>`).join("") || `<tr><td colspan="6" class="empty">포지션 없음</td></tr>`}</table></div>
+      <div class="box"><h3>마지막 실행에서 한 일</h3><ul class="acts">${f.actions.map(a => `<li>${esc(a)}</li>`).join("") || "<li>매매 없음</li>"}</ul></div>`;
+  } else if (botTab === "spot"){
+    const last = s.series.at(-1)?.value, first = s.series[0]?.value;
+    body = `<div class="kv3"><div><small>평가금 (USDT)</small><b>${fmt(last)}</b></div><div><small>기록 시작 대비</small><b class="${last >= first ? "pos" : "neg"}">${first ? ((last/first - 1) * 100).toFixed(2) + "%" : "—"}</b></div>
+      <div><small>BTC 비중</small><b>${s.weight ? Math.round(s.weight * 100) + "%" : "—"}</b></div><div><small>추세 투표</small><b>${esc(s.votes ?? "—")}/6</b></div></div>
+      ${s.series.length > 1 ? `<div class="box chart"><h3>현물 BTC 봇 평가금 · BTC ${fmt(s.btc_price)} · 마지막 ${esc(s.last)} UTC</h3>${chartSVG(s.series)}</div>` : ""}`;
+  } else {
+    body = `<div class="box chart" style="margin-bottom:14px"><h3>${esc(t.head || "BTC 봇 모의투자 대회")}</h3>${multiSVG(t.lines)}</div>
+      <div class="box scrollx"><h3>순위</h3><table class="tbl"><tr><th>#</th><th>봇</th><th class="r">평가금</th><th class="r">수익률</th><th class="r">최대낙폭</th><th class="r">BTC 비중</th><th class="r">매매</th></tr>
+        ${t.board.map(b => `<tr class="${b.name.startsWith("①") ? "me" : ""}"><td class="num">${b.rank}</td><td>${esc(b.name)}</td><td class="r num">${esc(b.equity)}</td><td class="r num ${b.ret.startsWith("-") ? "neg" : "pos"}">${esc(b.ret)}</td><td class="r num">${esc(b.mdd)}</td><td class="r num">${esc(b.weight)}</td><td class="r num">${esc(b.trades)}</td></tr>`).join("")}</table></div>`;
+  }
+  return `<h2 style="margin-top:34px">봇 현황</h2><div class="tabs" role="tablist">${tabs.map(([k,l]) => `<button type="button" role="tab" aria-selected="${botTab === k}" class="${botTab === k ? "on" : ""}" data-bt="${k}">${l}</button>`).join("")}</div>${body}
+    <p style="color:var(--faint);font-size:12px;margin-top:12px">데모·모의 계좌 기록 · 투자 조언 아님 · 5분마다 자동 갱신</p>`;
 }
 function preseason(){
   const pre = B.preseason, n = pre.filter(x => x.done).length;
@@ -377,6 +430,7 @@ function render(){
   else if (r[0] === "log") main.innerHTML = log();
   else main.innerHTML = dashboard();
   bindList();
+  document.querySelectorAll("[data-bt]").forEach(b => b.onclick = () => { botTab = b.dataset.bt; render(); });
 }
 window.addEventListener("hashchange", () => { render(); document.getElementById("main").scrollTop = 0; });
 document.getElementById("scrim").onclick = () => document.body.classList.remove("open");
@@ -389,6 +443,11 @@ setInterval(() => {
   s.onload = () => { const prev = JSON.stringify(B); B = window.BOARD; if (JSON.stringify(B) !== prev && !document.activeElement?.matches("input")) render(); s.remove(); };
   s.onerror = () => s.remove();
   document.head.append(s);
+  const b = document.createElement("script");
+  b.src = "bot.js?t=" + Date.now();
+  b.onload = () => { if (route()[1] === "coinbot") render(); b.remove(); };
+  b.onerror = () => b.remove();
+  document.head.append(b);
 }, 10000);
 </script>
 </body>
