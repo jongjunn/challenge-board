@@ -28,6 +28,19 @@ window.BOARD = {
   ],
   "projects": [
     {
+      "id": "linkflow",
+      "no": "후보",
+      "name": "LinkFlow",
+      "what": "무인공간 개발사용 도어락·IoT 통합 연동 (공식 API만, 연동 외주부터)",
+      "status": "waiting",
+      "stages": ["시장 조사", "개발사 20곳 연락", "첫 유료 연동", "API로 묶기", "판정"],
+      "current": 0,
+      "next": "Codex 시장조사 결과 검토 (research/linkflow_시장조사.md)",
+      "due": "",
+      "card": { "question": "무인공간 솔루션 개발사가 도어락 연동 외주에 돈을 낼까?", "deadline": "시작 후 4주", "kill": "20곳 중 유료 의향 0곳, 또는 공식 API로 국내 주요 도어락 연동 불가" },
+      "result": null
+    },
+    {
       "id": "pitchlens",
       "no": "사업 #2",
       "name": "PitchLens",
@@ -117,6 +130,7 @@ window.BOARD = {
     ]}
   ],
   "log": [
+    { "date": "2026-10-05", "who": "Claude", "text": "LinkFlow(도어락 통합 연동) 후보 등록 · Codex 시장조사 시작" },
     { "date": "2026-10-05", "who": "Codex", "text": "흰 원 안 손글씨 박종준 프로필 방향 확정 · 시안 v1 생성" },
     { "date": "2026-10-05", "who": "Codex", "text": "프리시즌에 채널명·핸들·프로필·배너·소개·썸네일·기본 설정 체크 추가" },
     { "date": "2026-10-05", "who": "Claude", "text": "GitHub Pages 공개 + 5분마다 자동 배포" },
