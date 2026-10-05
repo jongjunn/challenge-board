@@ -445,7 +445,8 @@ setInterval(() => {
   document.head.append(s);
   const b = document.createElement("script");
   b.src = "bot.js?t=" + Date.now();
-  b.onload = () => { if (route()[1] === "coinbot") render(); b.remove(); };
+  const prevBot = JSON.stringify(window.BOT);
+  b.onload = () => { if (route()[1] === "coinbot" && JSON.stringify(window.BOT) !== prevBot) render(); b.remove(); };
   b.onerror = () => b.remove();
   document.head.append(b);
 }, 10000);
