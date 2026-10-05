@@ -9,194 +9,294 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
 <style>
 :root{
-  --desk:#BDBDBD; --win:#E2E2E1; --panel:#EAEAE9; --card:#F1F1F0; --well:#DCDCDB;
-  --ink:#1E1E1E; --ink-2:#3A3A3A; --muted:#7B7B7A; --faint:#A3A3A2; --line:#D2D2D1;
-  --rail:#2A2A2B; --rail-2:#3A3A3B;
-  --ok:#3E9C6A; --ok-bg:#D8EBDD; --warn:#A97C1E; --warn-bg:#F0E6CC; --dead:#C2483B; --dead-bg:#F2D9D5; --off:#8A8A8A; --off-bg:#E0E0DF;
-  --hi:inset 0 1px 0 rgba(255,255,255,.85), 0 1px 2px rgba(0,0,0,.06), 0 8px 24px rgba(0,0,0,.06);
-  --sunk:inset 0 1px 2px rgba(0,0,0,.08), inset 0 -1px 0 rgba(255,255,255,.7);
+  --desk:#C4C4C3; --win:#E3E3E2; --panel:#EBEBEA; --card:#F3F3F2; --well:#DEDEDD; --hover:#F8F8F7;
+  --ink:#1C1C1C; --ink-2:#3A3A3A; --muted:#7A7A79; --faint:#A6A6A5; --line:#D6D6D5;
+  --ok:#3A9466; --ok-bg:#DAEBDF; --warn:#A27419; --warn-bg:#F0E7CF; --dead:#BF4538; --dead-bg:#F3DCD8; --off:#8A8A8A; --off-bg:#E2E2E1;
+  --hi:inset 0 1px 0 rgba(255,255,255,.85),0 1px 2px rgba(0,0,0,.05),0 6px 18px rgba(0,0,0,.05);
+  --sunk:inset 0 1px 2px rgba(0,0,0,.08),inset 0 -1px 0 rgba(255,255,255,.7);
+  --lift:inset 0 1px 0 rgba(255,255,255,.9),0 2px 4px rgba(0,0,0,.06),0 12px 28px rgba(0,0,0,.09);
   --sans:"Inter","Pretendard",system-ui,sans-serif;
+  --ease:cubic-bezier(.2,.8,.2,1);
+  --side:236px; --detail:400px;
 }
 *{box-sizing:border-box}
-html,body{height:100%}
-body{margin:0;background:var(--desk);color:var(--ink);font:14px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
-button{font:inherit;color:inherit;cursor:pointer}
+html,body{height:100%;margin:0}
+body{background:var(--desk);color:var(--ink);font:13px/1.45 var(--sans);-webkit-font-smoothing:antialiased;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:0;padding:0}
 a{color:inherit;text-decoration:none}
 .num{font-family:"Inter",sans-serif;font-variant-numeric:tabular-nums}
+:focus-visible{outline:2px solid var(--ink-2);outline-offset:2px;border-radius:8px}
+svg.i{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
 
-/* window */
-.desk{min-height:100%;padding:24px;display:flex}
-.win{flex:1;display:grid;grid-template-columns:68px 300px 1fr;gap:12px;background:var(--win);border-radius:30px;padding:14px;box-shadow:0 30px 80px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.7);min-height:calc(100vh - 48px)}
+/* ---------- frame ---------- */
+.desk{height:100vh;padding:12px}
+.win{height:100%;display:grid;grid-template-columns:56px var(--side) minmax(0,1fr) 0;gap:10px;background:var(--win);border-radius:24px;padding:10px;
+  box-shadow:0 24px 60px rgba(0,0,0,.16),inset 0 1px 0 rgba(255,255,255,.7);transition:grid-template-columns .32s var(--ease)}
+body.collapsed .win{grid-template-columns:56px 0 minmax(0,1fr) 0}
+body.detail .win{grid-template-columns:56px var(--side) minmax(0,1fr) var(--detail)}
+body.collapsed.detail .win{grid-template-columns:56px 0 minmax(0,1fr) var(--detail)}
 
 /* rail */
-.railwrap{display:flex;flex-direction:column;gap:12px;background:rgba(255,255,255,.35);border-radius:20px;padding:6px;box-shadow:var(--hi)}
-.rail{background:linear-gradient(180deg,#333334,#232324);border-radius:16px;padding:12px 0;display:flex;flex-direction:column;align-items:center;gap:8px;box-shadow:0 6px 18px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.12)}
-.rail .mark{color:#EDEDED;font-size:22px;line-height:1;padding:6px 0 12px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:4px;width:36px;text-align:center}
-.rail a{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:#CFCFCF}
-.rail a:hover{background:rgba(255,255,255,.08)}
-.rail a.on{background:linear-gradient(180deg,#58585A,#3E3E40);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 2px 6px rgba(0,0,0,.35)}
-.rail svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-.vlabel{flex:1;display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;transform:rotate(180deg);font-size:10px;letter-spacing:.18em;color:var(--faint);font-family:"Inter";border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:6px 8px}
-.gear{align-self:center;width:44px;height:44px;border-radius:13px;display:grid;place-items:center;background:linear-gradient(180deg,#333334,#232324);color:#DDD;box-shadow:0 4px 12px rgba(0,0,0,.25)}
-.gear svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.7}
+.railwrap{display:flex;flex-direction:column;gap:10px;background:rgba(255,255,255,.35);border-radius:18px;padding:5px;box-shadow:var(--hi);min-height:0}
+.rail{background:linear-gradient(180deg,#333334,#222223);border-radius:14px;padding:10px 0;display:flex;flex-direction:column;align-items:center;gap:6px;box-shadow:0 6px 16px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.12)}
+.rail .mark{color:#EEE;font-size:19px;padding:2px 0 10px;border-bottom:1px solid rgba(255,255,255,.1);width:30px;text-align:center;margin-bottom:2px}
+.rail a{position:relative;width:36px;height:36px;border-radius:11px;display:grid;place-items:center;color:#C9C9C9;transition:background .15s,color .15s,transform .15s}
+.rail a:hover{background:rgba(255,255,255,.09);color:#fff}
+.rail a:active{transform:scale(.92)}
+.rail a.on{background:linear-gradient(180deg,#5A5A5C,#3D3D3F);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 2px 6px rgba(0,0,0,.35)}
+.rail a[data-tip]:hover::after{content:attr(data-tip);position:absolute;left:46px;top:50%;transform:translateY(-50%);background:#222;color:#fff;font-size:12px;padding:4px 9px;border-radius:7px;white-space:nowrap;pointer-events:none;z-index:50}
+.vlabel{flex:1;display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;transform:rotate(180deg);font-size:9.5px;letter-spacing:.2em;color:var(--faint);border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:4px 7px;min-height:0;overflow:hidden}
+.kbtn{align-self:center;width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(180deg,#333334,#222223);color:#DDD;box-shadow:0 4px 10px rgba(0,0,0,.22);font-size:11px;font-weight:600}
+.kbtn:hover{color:#fff}
 
 /* sidebar */
-.side{background:var(--panel);border-radius:22px;padding:16px 16px 14px;display:flex;flex-direction:column;box-shadow:var(--hi);overflow:auto;min-height:0}
-.lights{display:flex;gap:7px;align-items:center;margin-bottom:18px}
-.lights i{width:11px;height:11px;border-radius:50%;box-shadow:inset 0 -1px 2px rgba(0,0,0,.2)}
+.side{background:var(--panel);border-radius:18px;box-shadow:var(--hi);overflow:hidden;min-width:0}
+.side-in{width:var(--side);height:100%;padding:12px 12px 10px;display:flex;flex-direction:column;overflow:auto;transition:opacity .2s}
+body.collapsed .side-in{opacity:0;pointer-events:none}
+.lights{display:flex;gap:6px;align-items:center;margin-bottom:14px}
+.lights i{width:10px;height:10px;border-radius:50%;box-shadow:inset 0 -1px 2px rgba(0,0,0,.2)}
 .lights i:nth-child(1){background:#E8A3A6}.lights i:nth-child(2){background:#E9D29A}.lights i:nth-child(3){background:#A9D9C4}
 .lights .sp{flex:1}
-.lights button{border:1px solid var(--line);background:none;width:20px;height:14px;border-radius:4px;padding:0}
-.me{display:flex;gap:12px;align-items:center;margin-bottom:18px}
-.avatar{width:48px;height:48px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#5A5A5C,#141414);display:grid;place-items:center;color:#fff;font-weight:600;font-size:17px;box-shadow:0 0 0 3px #fff,0 4px 10px rgba(0,0,0,.2)}
-.me b{display:block;font-weight:500;font-size:15px}
-.me small{color:var(--faint);font-size:12.5px}
-.grp{font-size:12.5px;color:var(--faint);margin:6px 0 6px 4px}
-.nav{display:flex;flex-direction:column;gap:2px;padding-bottom:12px;margin-bottom:10px;border-bottom:1px solid var(--line)}
-.nav a{display:flex;align-items:center;gap:12px;padding:9px 12px;border-radius:12px;font-size:14.5px;color:var(--ink-2)}
-.nav a:hover{background:rgba(255,255,255,.45)}
-.nav a.on{background:linear-gradient(180deg,#F6F6F5,#EDEDEC);box-shadow:var(--hi);color:var(--ink)}
-.nav svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
-.nav .cnt{margin-left:auto;font-size:11px;color:var(--muted);background:var(--well);border-radius:999px;min-width:20px;height:20px;display:grid;place-items:center;padding:0 6px;box-shadow:var(--sunk)}
-.docs-h{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:10px}
-.search{display:flex;align-items:center;gap:8px;background:var(--well);border-radius:12px;padding:9px 12px;box-shadow:var(--sunk);margin:6px 0 8px}
-.search svg{width:16px;height:16px;fill:none;stroke:var(--muted);stroke-width:1.8}
-.search input{border:0;background:none;outline:none;flex:1;font:inherit;font-size:13.5px;color:var(--ink)}
-.tree{background:rgba(255,255,255,.35);border-radius:14px;padding:8px;box-shadow:var(--hi);font-size:13.5px}
-.tree .f{display:flex;align-items:center;gap:9px;padding:6px 8px;border-radius:9px;color:var(--ink-2)}
-.tree .f.sub{padding-left:28px;font-size:13px}
-.tree .f.sub::before{content:"";width:1px;height:22px;background:var(--line);position:absolute;margin-left:-14px}
-.tree a.f:hover{background:rgba(255,255,255,.55)}
+.iconbtn{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;color:var(--muted);transition:background .15s,color .15s}
+.iconbtn:hover{background:rgba(0,0,0,.05);color:var(--ink)}
+.me{display:flex;gap:10px;align-items:center;margin-bottom:12px}
+.avatar{width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#5A5A5C,#141414);display:grid;place-items:center;color:#fff;font-weight:600;font-size:14px;box-shadow:0 0 0 2px #fff,0 3px 8px rgba(0,0,0,.2);flex:none}
+.me b{display:block;font-weight:600;font-size:13.5px}
+.me small{color:var(--faint);font-size:11.5px}
+.grp{font-size:11px;color:var(--faint);margin:4px 0 4px 6px;letter-spacing:.02em}
+.nav{display:flex;flex-direction:column;gap:1px;padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--line)}
+.nav a{display:flex;align-items:center;gap:10px;padding:7px 9px;border-radius:10px;font-size:13px;color:var(--ink-2);transition:background .15s}
+.nav a:hover{background:rgba(255,255,255,.5)}
+.nav a.on{background:linear-gradient(180deg,#F7F7F6,#EEEEED);box-shadow:var(--hi);color:var(--ink);font-weight:500}
+.cnt{margin-left:auto;font-size:10.5px;color:var(--muted);background:var(--well);border-radius:999px;min-width:19px;height:19px;display:grid;place-items:center;padding:0 6px;box-shadow:var(--sunk)}
+.search{display:flex;align-items:center;gap:7px;background:var(--well);border-radius:10px;padding:7px 10px;box-shadow:var(--sunk)}
+.search input{border:0;background:none;outline:none;flex:1;min-width:0;font:inherit;color:var(--ink)}
+.search kbd{font:500 10.5px var(--sans);color:var(--faint);border:1px solid var(--line);border-radius:5px;padding:0 5px}
+.tree{background:rgba(255,255,255,.35);border-radius:12px;padding:5px;box-shadow:var(--hi);margin-top:6px}
+.tree .f{display:flex;align-items:center;gap:8px;padding:5px 7px;border-radius:8px;color:var(--ink-2);font-size:12.5px}
+.tree button.f{width:100%;text-align:left}
+.tree .f .chev{margin-left:auto;transition:transform .2s;color:var(--faint)}
+.tree .f[aria-expanded="false"] .chev{transform:rotate(-90deg)}
+.tree .kids{overflow:hidden}
+.tree .kids[hidden]{display:none}
+.tree a.f{padding-left:26px;font-size:12.5px}
+.tree a.f:hover{background:rgba(255,255,255,.6)}
 .tree a.f.on{background:var(--well);box-shadow:var(--sunk);color:var(--ink)}
-.tree svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;flex:none}
-.tree .cnt{margin-left:auto;font-size:11px;color:var(--muted);background:var(--well);border-radius:999px;min-width:20px;height:20px;display:grid;place-items:center;box-shadow:var(--sunk)}
 
 /* main */
-.main{background:var(--panel);border-radius:22px;padding:30px 32px;box-shadow:var(--hi);overflow:auto;min-width:0;position:relative}
-.head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:24px}
-.head h1{margin:0;font-weight:500;font-size:30px;letter-spacing:-.01em}
-.head p{margin:4px 0 0;color:var(--muted);font-size:14px}
-.menu-btn{display:none;border:0;background:var(--card);box-shadow:var(--hi);border-radius:12px;width:40px;height:40px;flex:none}
-.menu-btn svg{width:18px;height:18px;fill:none;stroke:var(--ink);stroke-width:1.8;stroke-linecap:round}
-.live{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--muted);background:var(--card);border-radius:999px;padding:6px 12px;box-shadow:var(--hi);white-space:nowrap}
-.live i{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px var(--ok-bg)}
+.main{background:var(--panel);border-radius:18px;box-shadow:var(--hi);min-width:0;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+.bar{display:flex;align-items:center;gap:10px;padding:14px 18px 12px;border-bottom:1px solid var(--line);flex:none}
+.bar h1{margin:0;font-size:19px;font-weight:600;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar .sub{color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.bar .sp{flex:1}
+.live{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted);background:var(--card);border-radius:999px;padding:4px 10px;box-shadow:var(--hi);white-space:nowrap}
+.live i{width:6px;height:6px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px var(--ok-bg)}
+.live.pulse i{animation:pulse 1s var(--ease) 2}
+@keyframes pulse{50%{box-shadow:0 0 0 6px var(--ok-bg)}}
+.menu-btn{display:none}
+.view{flex:1;min-height:0;overflow:auto;padding:16px 18px 20px}
+.view.enter{animation:enter .28s var(--ease)}
+@keyframes enter{from{opacity:0;transform:translateY(6px)}}
 
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:14px;margin-bottom:34px}
-.kpi{display:flex;flex-direction:column;gap:10px}
-.kcard{background:linear-gradient(180deg,#F5F5F4,#ECECEB);border-radius:18px;padding:16px 18px 14px;box-shadow:var(--hi);border:1px solid rgba(255,255,255,.7)}
-.kcard .t{font-size:15px;color:var(--ink-2)}
-.kcard .v{display:flex;align-items:flex-end;gap:10px;margin-top:14px}
-.kcard .v b{font-family:"Inter";font-weight:300;font-size:60px;line-height:.9;letter-spacing:-.03em}
-.chip{font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:7px;background:var(--c-bg,var(--ok-bg));color:var(--c,var(--ok));margin-bottom:6px;white-space:nowrap}
-.see{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.4);border:1px solid var(--line);border-radius:12px;padding:10px 14px;font-size:14px;color:var(--ink-2)}
-.see:hover{background:rgba(255,255,255,.7)}
+/* cards */
+.card{background:var(--card);border-radius:16px;box-shadow:var(--hi);padding:14px 16px;min-width:0}
+.card-h{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.card-h h3{margin:0;font-size:13px;font-weight:600}
+.card-h .sp{flex:1}
+.card-h a,.card-h button.link{font-size:12px;color:var(--muted);display:inline-flex;align-items:center;gap:4px}
+.card-h a:hover,.card-h button.link:hover{color:var(--ink)}
+.muted{color:var(--muted)}
 
-h2{font-weight:500;font-size:26px;margin:0 0 14px;letter-spacing:-.01em}
-.tabs{display:flex;gap:24px;border-bottom:1px solid var(--line);margin-bottom:14px;overflow-x:auto}
-.tabs button{border:0;background:none;padding:8px 0 10px;font-size:15px;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
-.tabs button.on{color:var(--ink);border-color:var(--ink)}
-.well{background:linear-gradient(180deg,#E4E4E3,#E9E9E8);border-radius:18px;padding:10px;box-shadow:var(--sunk);margin-top:12px}
-.row{display:grid;grid-template-columns:44px minmax(0,1.6fr) minmax(0,1.1fr) minmax(0,2fr) 84px;gap:14px;align-items:center;padding:12px 14px;border-radius:14px;background:var(--card);box-shadow:var(--hi);margin:8px 0}
-.row:hover{background:#F7F7F6}
-.ico{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(180deg,#3A3A3B,#222);color:#fff;font-weight:600;font-size:13px;box-shadow:0 3px 8px rgba(0,0,0,.2)}
-.row b{font-weight:500;font-size:15px;display:block}
-.row small{color:var(--muted);font-size:12px}
-.mini{display:flex;gap:3px;margin-top:6px}
-.mini i{flex:1;height:4px;border-radius:2px;background:var(--well);box-shadow:var(--sunk)}
-.mini i.d{background:var(--ink-2);box-shadow:none}.mini i.c{background:var(--faint);box-shadow:none}
-.nx{font-size:13px;color:var(--ink-2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.st{justify-self:end;font-size:12px;font-weight:600;padding:4px 10px;border-radius:8px;background:var(--b);color:var(--c)}
+/* overview grid */
+.ov{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);gap:12px;height:100%;min-height:520px}
+.kpis{grid-column:1/-1;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.kpi{display:block;background:linear-gradient(180deg,#F6F6F5,#EDEDEC);border-radius:14px;padding:11px 13px 10px;box-shadow:var(--hi);border:1px solid rgba(255,255,255,.7);transition:box-shadow .18s,transform .18s}
+.kpi:hover{box-shadow:var(--lift);transform:translateY(-1px)}
+.kpi:active{transform:translateY(0) scale(.99)}
+.kpi .t{font-size:12px;color:var(--muted);display:flex;justify-content:space-between}
+.kpi .v{display:flex;align-items:flex-end;gap:7px;margin-top:6px}
+.kpi .v b{font-family:"Inter";font-weight:300;font-size:34px;line-height:.95;letter-spacing:-.03em}
+.kpi .v small{font-size:16px;color:var(--faint);font-weight:300}
+.chip{font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:6px;background:var(--cb,var(--ok-bg));color:var(--cc,var(--ok));white-space:nowrap;margin-bottom:3px}
+.kpi .meter{height:3px;border-radius:2px;background:var(--well);margin-top:9px;overflow:hidden}
+.kpi .meter i{display:block;height:100%;background:var(--ink-2);border-radius:2px;transition:width .6s var(--ease)}
+.col{display:flex;flex-direction:column;gap:12px;min-height:0;overflow:auto;margin:-4px;padding:4px}
+.listcard{display:flex;flex-direction:column;min-height:0}
+.listcard .rows{flex:1;min-height:0;overflow:auto;margin:0 -6px;padding:0 6px}
+
+/* tabs */
+.tabs{position:relative;display:flex;gap:18px;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
+.tabs button{padding:6px 0 8px;font-size:13px;color:var(--muted);white-space:nowrap;transition:color .15s}
+.tabs button:hover{color:var(--ink-2)}
+.tabs button.on{color:var(--ink);font-weight:500}
+.tabs .ind{position:absolute;bottom:-1px;height:2px;background:var(--ink);border-radius:2px;transition:left .25s var(--ease),width .25s var(--ease)}
+.toolbar{display:flex;gap:10px;align-items:center;margin:10px 0 6px}
+.toolbar .search{flex:1}
+
+/* project rows */
+.row{display:grid;grid-template-columns:34px minmax(0,1.3fr) minmax(0,1fr) minmax(0,1.6fr) 62px;gap:12px;align-items:center;padding:8px 10px;border-radius:12px;margin:6px 0;background:var(--card);box-shadow:var(--hi);cursor:pointer;transition:background .15s,box-shadow .18s,transform .18s;width:100%;text-align:left}
+.listcard .row{background:#F7F7F6}
+.row:hover{background:var(--hover);box-shadow:var(--lift);transform:translateY(-1px)}
+.row:active{transform:scale(.995)}
+.row.sel{box-shadow:0 0 0 1.5px var(--ink-2),var(--hi);background:#fff}
+.row.fade{animation:enter .25s var(--ease) both}
+.ico{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(180deg,#3A3A3B,#222);color:#fff;font-weight:600;font-size:11.5px;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.row b{font-weight:500;font-size:13.5px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row small{color:var(--muted);font-size:11.5px}
+.stg{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini{display:flex;gap:2px;margin-top:5px}
+.mini i{flex:1;height:3px;border-radius:2px;background:var(--well)}
+.mini i.d{background:var(--ink-2)}.mini i.c{background:var(--faint)}
+.nx{font-size:12px;color:var(--ink-2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.st{justify-self:end;font-size:11px;font-weight:600;padding:3px 8px;border-radius:7px;background:var(--b);color:var(--c);white-space:nowrap}
 .st.active{--b:var(--ok-bg);--c:var(--ok)}.st.waiting{--b:var(--warn-bg);--c:var(--warn)}.st.dead{--b:var(--dead-bg);--c:var(--dead)}.st.paused{--b:var(--off-bg);--c:var(--off)}.st.done{--b:var(--off-bg);--c:var(--ink-2)}
-.empty{padding:40px 10px;text-align:center;color:var(--faint);font-size:13.5px}
+@media (max-width:1680px){
+  body.detail .row{grid-template-columns:34px minmax(0,1fr) minmax(0,.9fr) 62px}
+  body.detail .row .c4{display:none}
+}
+.empty{padding:28px 10px;text-align:center;color:var(--faint);font-size:12.5px}
 
-/* detail */
-.back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-bottom:14px}
-.grid2{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:14px}
-.box{background:var(--card);border-radius:18px;padding:18px 20px;box-shadow:var(--hi)}
-.box h3{margin:0 0 12px;font-size:13px;font-weight:600;color:var(--muted);letter-spacing:.02em}
-.steps{display:flex;flex-direction:column}
-.step{display:grid;grid-template-columns:26px 1fr;gap:12px;align-items:start;padding:8px 0;position:relative}
-.step .n{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:12px;background:var(--well);box-shadow:var(--sunk);color:var(--muted)}
-.step.d .n{background:var(--ink-2);color:#fff;box-shadow:none}
-.step.c .n{background:#fff;color:var(--ink);box-shadow:0 0 0 2px var(--ink-2)}
-.step.c span{font-weight:600}
-.step:not(:last-child)::after{content:"";position:absolute;left:12.5px;top:36px;bottom:-4px;width:1px;background:var(--line)}
-dl.kv{display:grid;grid-template-columns:72px 1fr;gap:8px 12px;margin:0;font-size:13.5px}
-dl.kv dt{color:var(--muted)} dl.kv dd{margin:0}
-.endcard{background:linear-gradient(180deg,#F6EAE7,#F0E0DC)}
-.chart svg{width:100%;height:170px;display:block;overflow:visible}
-.chart .ax{font-size:11px;fill:var(--muted)}
-.tbl{width:100%;border-collapse:collapse;font-size:13.5px}
-.tbl th{font-weight:500;color:var(--muted);font-size:12px;text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
-.tbl td{padding:10px;border-bottom:1px solid var(--line)}
+/* charts */
+.chart{position:relative}
+.chart svg{width:100%;display:block;overflow:visible;touch-action:pan-y}
+.chart .ax{font-size:10px;fill:var(--muted)}
+.chart .guide{stroke:var(--ink-2);stroke-width:1;stroke-dasharray:2 3;opacity:0;transition:opacity .12s}
+.chart .dot{opacity:0;transition:opacity .12s}
+.chart.hover .guide,.chart.hover .dot{opacity:1}
+.tip{position:absolute;pointer-events:none;background:#1F1F1F;color:#fff;font-size:11.5px;padding:5px 8px;border-radius:8px;white-space:nowrap;transform:translate(-50%,-100%);opacity:0;transition:opacity .12s;z-index:5;line-height:1.35}
+.chart.hover .tip{opacity:1}
+.tip b{font-family:"Inter";font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:11.5px;color:var(--muted);margin-top:8px}
+.legend button{display:inline-flex;align-items:center;gap:5px;transition:opacity .15s}
+.legend button[aria-pressed="false"]{opacity:.35}
+.legend i{width:10px;height:3px;border-radius:2px}
+
+/* small widgets */
+.bot-mini{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.stat{background:#F7F7F6;border-radius:11px;padding:8px 10px;box-shadow:var(--hi)}
+.stat small{display:block;font-size:11px;color:var(--muted)}
+.stat b{font-family:"Inter";font-weight:400;font-size:19px}
+.pos{color:var(--ok)}.neg{color:var(--dead)}
+.rank{display:flex;align-items:center;gap:8px;padding:5px 2px;border-top:1px solid var(--line);font-size:12px}
+.rank:first-of-type{border-top:0}
+.rank .n{width:16px;color:var(--muted)}
+.rank .nm{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rank.me .nm{font-weight:600}
+.progress{height:6px;border-radius:3px;background:var(--well);box-shadow:var(--sunk);overflow:hidden;margin:4px 0 8px}
+.progress i{display:block;height:100%;background:var(--ink-2);transition:width .6s var(--ease)}
+.chk{display:flex;align-items:center;gap:9px;padding:6px 0;font-size:12.5px;border-top:1px solid var(--line)}
+.chk:first-of-type{border-top:0}
+.chk i{width:16px;height:16px;border-radius:5px;background:var(--well);box-shadow:var(--sunk);display:grid;place-items:center;font-style:normal;font-size:10px;flex:none}
+.chk.done i{background:var(--ink-2);color:#fff;box-shadow:none}
+.chk.done span{color:var(--faint);text-decoration:line-through}
+.logrow{display:flex;gap:8px;align-items:baseline;padding:6px 0;border-top:1px solid var(--line);font-size:12.5px}
+.logrow:first-of-type{border-top:0}
+.who{font-size:10.5px;font-weight:600;padding:1px 7px;border-radius:6px;background:var(--well);box-shadow:var(--sunk);white-space:nowrap}
+.date{width:32px;color:var(--muted);font-size:11.5px;flex:none}
+.tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.tbl th{font-weight:500;color:var(--muted);font-size:11px;text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl td{padding:7px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
 .tbl tr:last-child td{border-bottom:0}
 .tbl .r{text-align:right}
 .tbl tr.me td{font-weight:600}
-.pos{color:var(--ok)} .neg{color:var(--dead)}
-.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--muted);margin-top:8px}
-.legend i{display:inline-block;width:10px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle}
-.acts{margin:0;padding-left:18px;font-size:13px;color:var(--ink-2)} .acts li{margin:4px 0}
-.kv3{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:14px}
-.kv3 div{background:var(--card);border-radius:14px;padding:12px 14px;box-shadow:var(--hi)}
-.kv3 small{color:var(--muted);font-size:12px} .kv3 b{display:block;font-family:"Inter";font-weight:400;font-size:24px;margin-top:4px}
 .scrollx{overflow-x:auto}
+.acts{margin:0;padding-left:16px;font-size:12px;color:var(--ink-2)}.acts li{margin:3px 0}
 
-/* checklist / log */
-.check{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:14px;background:var(--card);box-shadow:var(--hi);margin:8px 0;font-size:14.5px}
-.check i{width:20px;height:20px;border-radius:6px;background:var(--well);box-shadow:var(--sunk);display:grid;place-items:center;font-style:normal;font-size:12px}
-.check.done i{background:var(--ink-2);color:#fff;box-shadow:none}
-.check.done span{color:var(--faint);text-decoration:line-through}
-.bar{height:8px;border-radius:4px;background:var(--well);box-shadow:var(--sunk);overflow:hidden;margin:6px 0 16px}
-.bar i{display:block;height:100%;background:var(--ink-2)}
-.who{font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:7px;background:var(--well);box-shadow:var(--sunk);white-space:nowrap}
+/* detail pane */
+.detail{background:var(--panel);border-radius:18px;box-shadow:var(--hi);overflow:hidden;min-width:0}
+.detail-in{width:var(--detail);height:100%;display:flex;flex-direction:column}
+.detail .bar{padding:12px 14px 10px}
+.detail .view{padding:14px}
+.steps{display:flex;flex-direction:column}
+.step{display:grid;grid-template-columns:22px 1fr;gap:10px;align-items:center;padding:6px 0;position:relative;font-size:12.5px}
+.step .n{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:10.5px;background:var(--well);box-shadow:var(--sunk);color:var(--muted)}
+.step.d .n{background:var(--ink-2);color:#fff;box-shadow:none}
+.step.c .n{background:#fff;color:var(--ink);box-shadow:0 0 0 2px var(--ink-2)}
+.step.c span{font-weight:600}
+.step:not(:last-child)::after{content:"";position:absolute;left:10.5px;top:30px;bottom:-6px;width:1px;background:var(--line)}
+dl.kv{display:grid;grid-template-columns:62px 1fr;gap:6px 10px;margin:0;font-size:12.5px}
+dl.kv dt{color:var(--muted)} dl.kv dd{margin:0}
+.endcard{background:linear-gradient(180deg,#F6EAE7,#F0E0DC)}
+.stack{display:flex;flex-direction:column;gap:10px}
+.seg{display:inline-flex;background:var(--well);border-radius:9px;padding:2px;box-shadow:var(--sunk)}
+.seg button{font-size:11.5px;padding:4px 9px;border-radius:7px;color:var(--muted);transition:background .15s,color .15s}
+.seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
 
 /* doc */
-.doc{background:var(--card);border-radius:18px;padding:28px 34px;box-shadow:var(--hi);max-width:900px;line-height:1.7}
-.doc h1{font-size:26px;font-weight:600;margin:0 0 16px}
-.doc h2{font-size:20px;margin:28px 0 10px}
-.doc h3{font-size:16px;margin:22px 0 8px}
-.doc table{border-collapse:collapse;width:100%;font-size:13px;margin:12px 0;display:block;overflow-x:auto}
-.doc th,.doc td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+.doc{background:var(--card);border-radius:16px;padding:22px 28px;box-shadow:var(--hi);max-width:860px;line-height:1.7;font-size:13.5px}
+.doc h1{font-size:22px;font-weight:600;margin:0 0 14px}
+.doc h2{font-size:17px;margin:24px 0 8px}
+.doc h3{font-size:14.5px;margin:18px 0 6px}
+.doc table{border-collapse:collapse;width:100%;font-size:12.5px;margin:10px 0;display:block;overflow-x:auto}
+.doc th,.doc td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
 .doc th{background:var(--well)}
-.doc blockquote{margin:12px 0;padding:8px 16px;border-left:3px solid var(--ink-2);background:rgba(0,0,0,.03);border-radius:0 10px 10px 0}
-.doc code{background:var(--well);padding:1px 5px;border-radius:5px;font-size:12.5px}
-.doc pre{background:var(--well);padding:12px 14px;border-radius:12px;overflow-x:auto}
+.doc blockquote{margin:10px 0;padding:6px 14px;border-left:3px solid var(--ink-2);background:rgba(0,0,0,.03);border-radius:0 10px 10px 0}
+.doc code{background:var(--well);padding:1px 5px;border-radius:5px;font-size:12px}
+.doc pre{background:var(--well);padding:10px 12px;border-radius:10px;overflow-x:auto}
 .doc pre code{background:none;padding:0}
 .doc a{text-decoration:underline}
 
-/* responsive */
+/* palette + toast */
+.pal{position:fixed;inset:0;z-index:100;display:none;align-items:flex-start;justify-content:center;padding-top:14vh;background:rgba(30,30,30,.18);backdrop-filter:blur(2px)}
+.pal.open{display:flex;animation:fade .15s}
+@keyframes fade{from{opacity:0}}
+.pal-box{width:min(560px,calc(100vw - 32px));background:var(--card);border-radius:16px;box-shadow:0 30px 70px rgba(0,0,0,.25);overflow:hidden;animation:pop .2s var(--ease)}
+@keyframes pop{from{transform:translateY(-6px) scale(.98);opacity:0}}
+.pal-box .search{border-radius:0;box-shadow:none;background:transparent;padding:14px 16px;border-bottom:1px solid var(--line);font-size:14.5px}
+.pal-list{max-height:52vh;overflow:auto;padding:6px}
+.pal-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;font-size:13px;width:100%;text-align:left}
+.pal-item small{margin-left:auto;color:var(--faint);font-size:11.5px}
+.pal-item.on{background:var(--well)}
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);background:#1F1F1F;color:#fff;padding:8px 14px;border-radius:10px;font-size:12.5px;opacity:0;transition:opacity .2s,transform .25s var(--ease);pointer-events:none;z-index:120}
+.toast.show{opacity:1;transform:translate(-50%,0)}
 .scrim{display:none}
-@media (max-width:1080px){
-  .win{grid-template-columns:68px 1fr}
-  .side{position:fixed;z-index:20;top:24px;bottom:24px;left:104px;width:300px;transform:translateX(-130%);transition:transform .25s ease}
-  body.open .side{transform:none}
-  body.open .scrim{display:block;position:fixed;inset:0;z-index:10;background:rgba(0,0,0,.18)}
-  .menu-btn{display:grid;place-items:center}
+
+/* ---------- responsive ---------- */
+@media (max-width:1279px){
+  body.detail .win,body.collapsed.detail .win{grid-template-columns:56px var(--side) minmax(0,1fr) 0}
+  body.collapsed.detail .win{grid-template-columns:56px 0 minmax(0,1fr) 0}
+  .detail{position:fixed;z-index:40;top:22px;bottom:22px;right:22px;width:min(var(--detail),calc(100vw - 44px));transform:translateX(calc(100% + 30px));transition:transform .3s var(--ease);box-shadow:0 20px 60px rgba(0,0,0,.25)}
+  body.detail .detail{transform:none}
+  body.detail .scrim{display:block;position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.12)}
+  .detail-in{width:100%}
+}
+@media (max-width:1100px){
+  .kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (max-width:1023px){
+  .win,body.collapsed .win,body.detail .win,body.collapsed.detail .win{grid-template-columns:56px 0 minmax(0,1fr) 0}
+  .side{position:fixed;z-index:45;top:22px;bottom:22px;left:78px;width:var(--side);transform:translateX(calc(-100% - 90px));transition:transform .3s var(--ease);box-shadow:0 20px 60px rgba(0,0,0,.22)}
+  body.collapsed .side-in{opacity:1;pointer-events:auto}
+  body.nav .side{transform:none}
+  body.nav .scrim{display:block;position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.12)}
+  .menu-btn{display:grid}
+  .ov{grid-template-columns:1fr;grid-template-rows:none;height:auto}
+  .col{overflow:visible}
+  .listcard .rows{max-height:none;overflow:visible}
 }
 @media (max-width:760px){
-  .desk{padding:10px}
-  .win{grid-template-columns:1fr;padding:10px;border-radius:22px;min-height:calc(100vh - 20px)}
+  body{overflow:auto}
+  .desk{height:auto;min-height:100vh;padding:8px}
+  .win,body.collapsed .win,body.detail .win,body.collapsed.detail .win{display:flex;flex-direction:column;height:auto;min-height:calc(100vh - 16px);padding:8px;border-radius:20px}
   .railwrap{flex-direction:row;padding:4px}
-  .rail{flex-direction:row;padding:0 10px;flex:1;justify-content:space-around}
+  .rail{flex-direction:row;padding:0 8px;flex:1;justify-content:space-around}
   .rail .mark{border:0;padding:0;margin:0;width:auto}
+  .rail a[data-tip]:hover::after{display:none}
   .vlabel{display:none}
-  .gear{display:none}
-  .rail a{width:36px;height:36px}
-  .head{flex-wrap:wrap}
-  .head h1{font-size:24px}
-  .kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-  .kcard{padding:14px}
-  .kcard .v{flex-wrap:wrap;gap:6px}
-  .see{padding:8px 12px;font-size:13px}
-  .side{left:10px;right:10px;width:auto;top:10px;bottom:10px}
-  .main{padding:20px 16px}
-  .row{grid-template-columns:44px 1fr auto}
+  .kbtn{display:none}
+  .side{left:8px;right:8px;top:8px;bottom:8px;width:auto}
+  .side-in{width:100%}
+  .main{overflow:visible}
+  .view{overflow:visible;padding:12px}
+  .bar{flex-wrap:wrap;padding:12px}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .kpi .v b{font-size:28px}
+  .row{grid-template-columns:34px minmax(0,1fr) auto}
   .row .c3,.row .c4{display:none}
-  .grid2{grid-template-columns:1fr}
-  .kcard .v b{font-size:40px}
-  .doc{padding:20px}
+  .detail{top:8px;bottom:8px;right:8px;left:8px;width:auto}
+  .doc{padding:16px}
 }
-@media (prefers-reduced-motion:reduce){.side{transition:none}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
@@ -204,21 +304,30 @@ dl.kv dt{color:var(--muted)} dl.kv dd{margin:0}
   <div class="railwrap">
     <nav class="rail" id="rail" aria-label="주요 메뉴"></nav>
     <div class="vlabel">BAKJONGJUN 2026 BOARD</div>
-    <a class="gear" href="#/doc/AGENTS.md" title="작업 규칙"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-2.7-1.1l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.6 1.6 0 0 0 3.5 14H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.1-2.7l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.6 1.6 0 0 0 10 3.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 2.7 1.1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0 1.1 2.7H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg></a>
+    <button class="kbtn" type="button" id="kbtn" title="빠른 이동 (⌘K)" aria-label="빠른 이동">⌘K</button>
   </div>
-  <aside class="side" id="side" aria-label="탐색"></aside>
+  <aside class="side" id="side" aria-label="탐색"><div class="side-in" id="side-in"></div></aside>
   <main class="main" id="main"></main>
+  <aside class="detail" id="detail" aria-label="상세"><div class="detail-in" id="detail-in"></div></aside>
 </div></div>
 <div class="scrim" id="scrim"></div>
+<div class="pal" id="pal" role="dialog" aria-label="빠른 이동"><div class="pal-box">
+  <label class="search"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4-4"/></svg><input id="pal-q" placeholder="사업, 문서, 화면 이름…" autocomplete="off"><kbd>esc</kbd></label>
+  <div class="pal-list" id="pal-list" role="listbox"></div>
+</div></div>
+<div class="toast" id="toast" role="status"></div>
 
-<script src="data.js" id="datajs"></script>
+<script src="data.js"></script>
 <script src="bot.js" onerror="window.BOT=null"></script>
 <script>
 let B = window.BOARD;
 const STN = {active:"진행중", waiting:"대기", paused:"보류", done:"완료", dead:"사망"};
+const ORDER = {active:0, waiting:1, paused:2, done:3, dead:4};
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const isDate = s => /^\d{4}-\d{2}-\d{2}$/.test(s || "");
-const md = s => { const [,m,d] = s.split("-"); return `${+m}.${+d}`; };
+const md = s => { const [,m,d] = String(s).split("-"); return `${+m}.${+d}`; };
+const fmt = v => v == null || v === "" ? "—" : Number(v).toLocaleString("en-US", {maximumFractionDigits: 2});
+const store = {get(k, d){ try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } }, set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }};
 const I = {
   home:'<path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/>',
   biz:'<rect x="4" y="7" width="16" height="12" rx="2"/><path d="M9 7V5h6v2"/>',
@@ -226,229 +335,381 @@ const I = {
   pre:'<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M8 13l3 3 5-6"/>',
   log:'<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>',
   doc:'<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/>',
-  list:'<circle cx="6" cy="7" r="2"/><path d="M10 7h9M6 17h.01M10 17h9M6 12h.01M10 12h9"/>',
+  list:'<circle cx="6" cy="7" r="1.5"/><path d="M10 7h9M10 12h9M10 17h9"/><circle cx="6" cy="12" r="1.5"/><circle cx="6" cy="17" r="1.5"/>',
   dot:'<circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.5"/>',
   wait:'<circle cx="12" cy="12" r="8"/><path d="M12 7v5h4"/>',
   x:'<circle cx="12" cy="12" r="8"/><path d="M9 9l6 6M15 9l-6 6"/>',
   folder:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
   file:'<path d="M7 3h7l5 5v13H7z"/>',
   search:'<circle cx="11" cy="11" r="6"/><path d="M20 20l-4-4"/>',
+  chev:'<path d="M6 9l6 6 6-6"/>',
+  side:'<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M9 5v14"/>',
+  close:'<path d="M6 6l12 12M18 6L6 18"/>',
+  menu:'<path d="M4 7h16M4 12h16M4 17h16"/>',
   arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',
-  menu:'<path d="M4 7h16M4 12h16M4 17h16"/>'
+  expand:'<path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/>'
 };
-const svg = (k, cls="") => `<svg viewBox="0 0 24 24" class="${cls}" aria-hidden="true">${I[k]}</svg>`;
-const route = () => (location.hash.replace(/^#\/?/, "") || "").split("/").map(decodeURIComponent);
-let tab = "all", q = "", docQ = "", botTab = "fut";
+const svg = k => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${I[k]}</svg>`;
+const state = {tab:"all", q:"", docQ:"", botTab:"fut", sel:null, hidden:new Set(), open:store.get("tree", {})};
+const parseHash = () => {
+  const [path, qs] = location.hash.replace(/^#\/?/, "").split("?");
+  return {r: (path || "").split("/").map(decodeURIComponent), sel: new URLSearchParams(qs || "").get("p")};
+};
+const go = (path, sel) => { location.hash = "#/" + path + (sel ? "?p=" + encodeURIComponent(sel) : ""); };
+
+/* ---------- toast ---------- */
+function toast(msg){ const t = document.getElementById("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("show"), 2200); }
 
 /* ---------- shell ---------- */
 function renderRail(r){
-  const items = [["", "home", "대시보드"], ["projects", "biz", "사업"], ["p/coinbot", "bot", "코인 봇"], ["preseason", "pre", "프리시즌"], ["log", "log", "기록"], ["doc/" + (B.docs?.[0]?.files?.[0]?.path || ""), "doc", "문서"]];
+  const items = [["", "home", "대시보드"], ["projects", "biz", "사업 · 파이프라인"], ["bot", "bot", "봇 현황"], ["preseason", "pre", "프리시즌"], ["log", "log", "기록"], ["doc/" + (B.docs?.[0]?.files?.[0]?.path || ""), "doc", "문서"]];
   const cur = r.join("/");
   document.getElementById("rail").innerHTML = `<div class="mark" aria-hidden="true">✳</div>` + items.map(([h, ic, t]) => {
-    const on = h === "" ? cur === "" : (h.startsWith("doc/") ? r[0] === "doc" : cur === h || (h === "projects" && r[0] === "status"));
-    return `<a href="#/${h}" class="${on ? "on" : ""}" title="${t}" aria-label="${t}">${svg(ic)}</a>`;
+    const on = h === "" ? cur === "" : h.startsWith("doc/") ? r[0] === "doc" : (cur === h || (h === "projects" && r[0] === "status"));
+    return `<a href="#/${h}" class="${on ? "on" : ""}" data-tip="${t}" aria-label="${t}">${svg(ic)}</a>`;
   }).join("");
 }
-
 function renderSide(r){
-  const P = B.projects, cnt = s => P.filter(p => p.status === s).length;
-  const cur = r.join("/");
-  const link = (h, ic, t, n) => `<a href="#/${h}" class="${cur === h ? "on" : ""}">${svg(ic)}${t}${n != null ? `<span class="cnt num">${n}</span>` : ""}</a>`;
-  const docs = (B.docs || []).map(g => {
-    const files = g.files.filter(f => !docQ || (f.title + f.path).toLowerCase().includes(docQ.toLowerCase()));
+  const P = B.projects, cnt = s => P.filter(p => p.status === s).length, cur = r.join("/");
+  const link = (h, ic, t, n) => `<a href="#/${h}" class="${cur === h ? "on" : ""}">${svg(ic)}<span>${t}</span>${n != null ? `<span class="cnt num">${n}</span>` : ""}</a>`;
+  const docs = (B.docs || []).map((g, gi) => {
+    const files = g.files.filter(f => !state.docQ || (f.title + f.path).toLowerCase().includes(state.docQ.toLowerCase()));
     if (!files.length) return "";
-    return `<div class="f">${svg("folder")}${esc(g.folder)}<span class="cnt num">${files.length}</span></div>` +
-      files.map(f => `<a class="f sub ${r[0] === "doc" && r.slice(1).join("/") === f.path ? "on" : ""}" href="#/doc/${encodeURI(f.path)}">${svg("file")}${esc(f.title)}</a>`).join("");
+    const open = state.docQ || state.open[g.folder] !== false;
+    return `<button class="f" type="button" data-folder="${esc(g.folder)}" aria-expanded="${open}">${svg("folder")}${esc(g.folder)}<span class="cnt num">${files.length}</span><span class="chev">${svg("chev")}</span></button>
+      <div class="kids" ${open ? "" : "hidden"}>${files.map(f => `<a class="f ${r[0] === "doc" && r.slice(1).join("/") === f.path ? "on" : ""}" href="#/doc/${encodeURI(f.path)}">${svg("file")}<span>${esc(f.title)}</span></a>`).join("")}</div>`;
   }).join("");
-  document.getElementById("side").innerHTML = `
-    <div class="lights"><i></i><i></i><i></i><span class="sp"></span><button type="button" aria-label="사이드바 닫기" onclick="document.body.classList.remove('open')"></button></div>
-    <div class="me"><div class="avatar">박</div><div><b>${esc(B.meta.channel)} ⌄</b><small>${esc(B.meta.start)} → ${esc(B.meta.goal)}</small></div></div>
+  document.getElementById("side-in").innerHTML = `
+    <div class="lights"><i></i><i></i><i></i><span class="sp"></span><button class="iconbtn" type="button" data-act="collapse" title="사이드바 접기 ([)" aria-label="사이드바 접기">${svg("side")}</button></div>
+    <div class="me"><div class="avatar">박</div><div><b>${esc(B.meta.channel)}</b><small>${esc(B.meta.start)} → ${esc(B.meta.goal)}</small></div></div>
     <div class="grp">Projects</div>
-    <div class="nav">${link("", "list", "Dashboard", P.length)}${link("projects", "biz", "사업 · 파이프라인")}${link("preseason", "pre", "프리시즌", `${B.preseason.filter(x => x.done).length}/${B.preseason.length}`)}</div>
+    <div class="nav">${link("", "home", "Dashboard")}${link("projects", "list", "사업 · 파이프라인", P.length)}${link("bot", "bot", "봇 현황")}${link("preseason", "pre", "프리시즌", `${B.preseason.filter(x => x.done).length}/${B.preseason.length}`)}</div>
     <div class="grp">Status</div>
     <div class="nav">${link("status/active", "dot", "진행중", cnt("active"))}${link("status/waiting", "wait", "대기", cnt("waiting"))}${link("status/dead", "x", "사망 선고", cnt("dead"))}</div>
     <div class="grp">History</div>
     <div class="nav">${link("log", "log", "기록", B.log.length)}</div>
-    <div class="docs-h"><span class="grp" style="margin:0 0 0 4px">Documents</span></div>
-    <label class="search">${svg("search")}<input id="docq" placeholder="Search" value="${esc(docQ)}" aria-label="문서 검색"></label>
+    <div class="grp" style="margin-top:auto;padding-top:6px">Documents</div>
+    <label class="search">${svg("search")}<input id="docq" placeholder="문서 검색" value="${esc(state.docQ)}" aria-label="문서 검색"></label>
     <div class="tree">${docs || `<div class="f" style="color:var(--faint)">없음</div>`}</div>`;
-  const inp = document.getElementById("docq");
-  inp.oninput = e => { docQ = e.target.value; renderSide(route()); const n = document.getElementById("docq"); n.focus(); n.setSelectionRange(docQ.length, docQ.length); };
 }
 
-const head = (t, sub) => `<div class="head"><div style="display:flex;gap:12px;align-items:flex-start">
-  <button class="menu-btn" type="button" aria-label="메뉴" onclick="document.body.classList.add('open')">${svg("menu")}</button>
-  <div><h1>${t}</h1><p>${sub}</p></div></div><span class="live"><i></i>업데이트 ${esc(B.meta.updated)}</span></div>`;
+const bar = (title, sub, extra = "") => `<div class="bar">
+  <button class="iconbtn menu-btn" type="button" data-act="nav" aria-label="메뉴 열기">${svg("menu")}</button>
+  <button class="iconbtn" type="button" data-act="collapse" title="사이드바 (${"["})" aria-label="사이드바 토글" style="${document.body.classList.contains("collapsed") ? "" : "display:none"}">${svg("side")}</button>
+  <h1>${title}</h1><span class="sub">${sub}</span><span class="sp"></span>${extra}
+  <span class="live" id="live"><i></i>${esc(B.meta.updated)}</span></div>`;
 
-/* ---------- views ---------- */
+/* ---------- charts ---------- */
+const COLORS = ["#1C1C1C","#3A9466","#BF4538","#A27419","#4F6BD8","#8E5BD0","#8A8A8A","#D07A2E","#2A9BB0","#B54E8C"];
+function lineChart(lines, {h = 150, unit = "", base = true} = {}){
+  const vis = lines.filter(l => !state.hidden.has(l.key));
+  const dates = [...new Set(lines.flatMap(l => l.series.map(x => x.date)))].sort();
+  if (dates.length < 2) return `<div class="empty">기록이 2일 이상 쌓이면 그래프가 나와요</div>`;
+  const all = (vis.length ? vis : lines).flatMap(l => l.series.map(x => x.value));
+  const W = 600, lo = Math.min(...all), hi = Math.max(...all), pad = (hi - lo) * .15 || 1;
+  const X = d => 26 + dates.indexOf(d) * (W - 44) / (dates.length - 1), Y = v => 10 + (h - 34) * (1 - (v - lo + pad) / (hi - lo + 2*pad));
+  const path = s => { const p = s.map(x => [X(x.date), Y(x.value)]); let d = `M${p[0]}`; for (let i = 1; i < p.length; i++){ const [a,b] = p[i-1], [c,e] = p[i], m = (a+c)/2; d += ` C${m},${b} ${m},${e} ${c},${e}`; } return d; };
+  const tick = Math.max(1, Math.ceil(dates.length / 7));
+  const id = "c" + Math.random().toString(36).slice(2, 8);
+  chartData[id] = {dates, lines: vis, X, Y, W, h, unit};
+  const single = lines.length === 1;
+  return `<div class="chart" id="${id}"><svg viewBox="0 0 ${W} ${h}" preserveAspectRatio="none" style="height:${h}px" role="img" aria-label="추이 그래프">
+    ${single && base ? `<line x1="16" x2="${W-8}" y1="${Y(lines[0].series[0].value)}" y2="${Y(lines[0].series[0].value)}" stroke="var(--faint)" stroke-dasharray="3 4"/>` : ""}
+    ${vis.map((l) => { const ci = lines.indexOf(l); return `<path d="${path(l.series)}" fill="none" stroke="${COLORS[ci % COLORS.length]}" stroke-width="${single || l.key === "bot" ? 2.2 : 1.3}" stroke-linecap="round" vector-effect="non-scaling-stroke"/>`; }).join("")}
+    ${single ? (() => { const s = lines[0].series, x = s.at(-1); return `<circle cx="${X(x.date)}" cy="${Y(x.value)}" r="4" fill="var(--ink)"/>`; })() : ""}
+    <line class="guide" x1="0" x2="0" y1="6" y2="${h-22}"/>
+    ${vis.map(l => `<circle class="dot" r="3.5" fill="#fff" stroke="${COLORS[lines.indexOf(l) % COLORS.length]}" stroke-width="2" data-k="${esc(l.key)}"/>`).join("")}
+    ${dates.map((d,i) => i % tick && i !== dates.length-1 ? "" : `<text class="ax" x="${X(d)}" y="${h-5}" text-anchor="middle">${md(d)}</text>`).join("")}
+  </svg><div class="tip"></div></div>
+  ${single ? "" : `<div class="legend">${lines.map((l,i) => `<button type="button" data-line="${esc(l.key)}" aria-pressed="${!state.hidden.has(l.key)}"><i style="background:${COLORS[i % COLORS.length]}"></i>${esc(l.name)}</button>`).join("")}</div>`}`;
+}
+let chartData = {};
+function bindCharts(root){
+  root.querySelectorAll(".chart").forEach(el => {
+    const c = chartData[el.id]; if (!c) return;
+    const svgEl = el.querySelector("svg"), tip = el.querySelector(".tip"), guide = el.querySelector(".guide");
+    const move = e => {
+      const rect = svgEl.getBoundingClientRect(), x = (e.clientX - rect.left) / rect.width * c.W;
+      let best = 0; c.dates.forEach((d,i) => { if (Math.abs(c.X(d) - x) < Math.abs(c.X(c.dates[best]) - x)) best = i; });
+      const d = c.dates[best], gx = c.X(d);
+      guide.setAttribute("x1", gx); guide.setAttribute("x2", gx);
+      const rows = [];
+      c.lines.forEach(l => { const p = l.series.find(s => s.date === d), dot = el.querySelector(`.dot[data-k="${CSS.escape(l.key)}"]`);
+        if (p && dot){ dot.setAttribute("cx", gx); dot.setAttribute("cy", c.Y(p.value)); dot.style.display = ""; rows.push([l, p.value]); } else if (dot) dot.style.display = "none"; });
+      rows.sort((a,b) => b[1] - a[1]);
+      tip.innerHTML = `<div style="color:#bbb">${md(d)}</div>` + rows.slice(0, 5).map(([l, v]) => `<div>${c.lines.length > 1 ? esc(l.name.slice(0, 14)) + " " : ""}<b>${fmt(v)}</b>${c.unit}</div>`).join("");
+      const topY = Math.min(...rows.map(([,v]) => c.Y(v)));
+      tip.style.left = Math.min(Math.max(gx / c.W * rect.width, 60), rect.width - 60) + "px";
+      tip.style.top = (topY / c.h * rect.height - 8) + "px";
+      el.classList.add("hover");
+    };
+    svgEl.addEventListener("pointermove", move);
+    svgEl.addEventListener("pointerdown", move);
+    svgEl.addEventListener("pointerleave", () => el.classList.remove("hover"));
+  });
+}
+
+/* ---------- pieces ---------- */
 function rowsHTML(list){
   if (!list.length) return `<div class="empty">조건에 맞는 항목이 없어요</div>`;
-  return list.map(p => {
+  return list.map((p, i) => {
     const st = p.stages || [], c = Math.min(p.current|0, st.length - 1);
-    return `<a class="row" href="#/p/${esc(p.id)}">
+    return `<button type="button" class="row fade ${state.sel === p.id ? "sel" : ""}" style="animation-delay:${i*25}ms" data-p="${esc(p.id)}" aria-pressed="${state.sel === p.id}">
       <div class="ico">${esc(p.name.replace(/\s/g, "").slice(0,2))}</div>
-      <div><b>${esc(p.name)}</b><small>${esc(p.no)}</small></div>
-      <div class="c3"><small class="num">${c+1}/${st.length}</small> <span style="font-size:13px">${esc(st[c] || "")}</span><div class="mini">${st.map((_,j) => `<i class="${j < c ? "d" : j === c ? "c" : ""}"></i>`).join("")}</div></div>
+      <div style="min-width:0"><b>${esc(p.name)}</b><small>${esc(p.no)}</small></div>
+      <div class="c3" style="min-width:0"><div class="stg"><span class="num muted">${c+1}/${st.length}</span> ${esc(st[c] || "")}</div><div class="mini">${st.map((_,j) => `<i class="${j < c ? "d" : j === c ? "c" : ""}"></i>`).join("")}</div></div>
       <div class="nx c4">${esc(p.next)}</div>
-      <span class="st ${esc(p.status)}">${STN[p.status] || esc(p.status)}</span></a>`;
+      <span class="st ${esc(p.status)}">${STN[p.status] || esc(p.status)}</span></button>`;
   }).join("");
 }
-function listBlock(fixed){
-  const order = {active:0, waiting:1, paused:2, done:3, dead:4};
+function filtered(fixed){
+  const t = fixed || state.tab, q = state.q.toLowerCase();
+  return B.projects.filter(p => (t === "all" || p.status === t) && (!q || (p.name + p.what + p.next + p.no).toLowerCase().includes(q)))
+    .sort((a,b) => (ORDER[a.status]??9) - (ORDER[b.status]??9));
+}
+function listCard(fixed){
   const tabs = [["all","전체"],["active","진행중"],["waiting","대기"],["dead","사망 선고"]];
-  const t = fixed || tab;
-  const list = B.projects.filter(p => (t === "all" || p.status === t) && (!q || (p.name + p.what + p.next).toLowerCase().includes(q.toLowerCase())))
-    .sort((a,b) => (order[a.status]??9) - (order[b.status]??9));
-  return `${fixed ? "" : `<div class="tabs" role="tablist">${tabs.map(([k,l]) => `<button type="button" role="tab" aria-selected="${t === k}" class="${t === k ? "on" : ""}" data-tab="${k}">${l}</button>`).join("")}</div>`}
-    <label class="search">${svg("search")}<input id="q" placeholder="Search" value="${esc(q)}" aria-label="사업 검색"></label>
-    <div class="well" id="rows">${rowsHTML(list)}</div>`;
+  const n = k => k === "all" ? B.projects.length : B.projects.filter(p => p.status === k).length;
+  return `<section class="card listcard">
+    <div class="card-h"><h3>사업 · 파이프라인</h3><span class="sp"></span><a href="#/projects">전체 보기 ${svg("arrow")}</a></div>
+    ${fixed ? "" : `<div class="tabs" role="tablist">${tabs.map(([k,l]) => `<button type="button" role="tab" aria-selected="${state.tab === k}" class="${state.tab === k ? "on" : ""}" data-tab="${k}">${l} <span class="num muted">${n(k)}</span></button>`).join("")}<span class="ind"></span></div>`}
+    <div class="toolbar"><label class="search">${svg("search")}<input id="q" placeholder="이름, 다음 할 일 검색" value="${esc(state.q)}" aria-label="사업 검색"><kbd>/</kbd></label></div>
+    <div class="rows" id="rows">${rowsHTML(filtered(fixed))}</div></section>`;
 }
-function bindList(){
-  document.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => { tab = b.dataset.tab; render(); });
-  const inp = document.getElementById("q");
-  if (inp) inp.oninput = e => { q = e.target.value; render(); const n = document.getElementById("q"); n.focus(); n.setSelectionRange(q.length, q.length); };
+function dayKPI(){
+  if (!isDate(B.meta.day1)) return ["PRE", "Day 1 미정", 0];
+  const d = Math.round((new Date(new Date().toISOString().slice(0,10)) - new Date(B.meta.day1)) / 864e5);
+  return d < 0 ? [`D-${-d}`, "Day 1까지", 0] : [d + 1, "/ 365일", Math.min(100, (d+1)/365*100)];
 }
-
-function kpi(t, v, chip, href, tone){
-  return `<div class="kpi"><div class="kcard"><div class="t">${t}</div><div class="v"><b class="num">${v}</b>${chip ? `<span class="chip" style="${tone || ""}">${chip}</span>` : ""}</div></div>
-    <a class="see" href="#/${href}">자세히 보기 <span>→</span></a></div>`;
-}
-function dashboard(){
+function kpis(){
   const P = B.projects, live = P.filter(p => p.status === "active" || p.status === "waiting").length, dead = P.filter(p => p.status === "dead").length;
+  const pre = B.preseason, n = pre.filter(x => x.done).length, [day, dl, dp] = dayKPI(), nw = B.ledger.net_worth;
+  const k = (href, t, v, chip, cs, meter) => `<a class="kpi" href="#/${href}"><div class="t">${t}<span>›</span></div><div class="v"><b class="num">${v}</b>${chip ? `<span class="chip" style="${cs || ""}">${chip}</span>` : ""}</div><div class="meter"><i style="width:${meter}%"></i></div></a>`;
+  return `<div class="kpis">
+    ${k("preseason", "챌린지 일차", day, dl, "--cb:var(--well);--cc:var(--muted)", dp)}
+    ${k("log", "순자산", nw == null ? "—" : (nw/1e4).toLocaleString("ko-KR") + "<small>만</small>", nw == null ? "Day 1부터" : "", "--cb:var(--well);--cc:var(--muted)", nw ? Math.min(100, nw/1e9*100) : 0)}
+    ${k("status/active", "살아있는 사업", live, `진행 ${P.filter(p => p.status === "active").length}`, "", live/Math.max(P.length,1)*100)}
+    ${k("status/dead", "사망 선고", dead, dead ? "판정" : "", "--cb:var(--dead-bg);--cc:var(--dead)", dead/Math.max(P.length,1)*100)}
+    ${k("preseason", "프리시즌", `${n}<small>/${pre.length}</small>`, `${Math.round(n/pre.length*100)}%`, "--cb:var(--warn-bg);--cc:var(--warn)", n/pre.length*100)}
+  </div>`;
+}
+function botMini(){
+  const T = window.BOT; if (!T) return "";
+  const f = T.futures, s = T.spot, last = f.series.at(-1)?.value, chg = f.start && last ? (last/f.start - 1)*100 : null, sl = s.series.at(-1)?.value;
+  const me = T.tournament.board.find(b => b.name.startsWith("①"));
+  return `<section class="card"><div class="card-h"><h3>봇 현황</h3><span class="sub muted" style="font-size:11.5px">데모 · 모의</span><span class="sp"></span><a href="#/bot">자세히 ${svg("arrow")}</a></div>
+    <div class="bot-mini"><div class="stat"><small>데모 선물 지갑</small><b class="num">${fmt(last)}</b> <span class="num ${chg >= 0 ? "pos" : "neg"}" style="font-size:11.5px">${chg == null ? "" : (chg >= 0 ? "+" : "") + chg.toFixed(2) + "%"}</span></div>
+      <div class="stat"><small>현물 BTC 봇</small><b class="num">${fmt(sl)}</b> <span class="muted" style="font-size:11.5px">BTC ${s.weight ? Math.round(s.weight*100) + "%" : "—"}</span></div></div>
+    ${lineChart([{key:"fut", name:"데모 선물", series:f.series}], {h:92, unit:" USDT"})}
+    <div class="card-h" style="margin:10px 0 4px"><h3 style="font-size:12px">투자대회 TOP 3</h3><span class="sp"></span>${me ? `<span class="muted" style="font-size:11.5px">지금 봇 ${me.rank}위</span>` : ""}</div>
+    ${T.tournament.board.slice(0,3).map(b => `<div class="rank ${b.name.startsWith("①") ? "me" : ""}"><span class="n num">${b.rank}</span><span class="nm">${esc(b.name)}</span><span class="num ${b.ret.startsWith("-") ? "neg" : "pos"}">${esc(b.ret)}</span></div>`).join("")}
+  </section>`;
+}
+function preMini(){
   const pre = B.preseason, n = pre.filter(x => x.done).length;
-  let day = "PRE", dchip = "Day 1 미정";
-  if (isDate(B.meta.day1)){ const d = Math.round((new Date(new Date().toISOString().slice(0,10)) - new Date(B.meta.day1)) / 864e5); day = d < 0 ? `D-${-d}` : d + 1; dchip = d < 0 ? "Day 1까지" : "/ 365일"; }
-  const nw = B.ledger.net_worth;
-  return head("Dashboard", `${esc(B.meta.tagline)}`) + `
-    <div class="kpis">
-      ${kpi("챌린지 일차", day, dchip, "preseason", "--c:var(--muted);--c-bg:var(--well)")}
-      ${kpi("순자산", nw == null ? "—" : (nw/1e4).toLocaleString("ko-KR"), nw == null ? "Day 1부터 집계" : "만원", "log", "--c:var(--muted);--c-bg:var(--well)")}
-      ${kpi("살아있는 사업", live, `진행 ${P.filter(p => p.status === "active").length}`, "status/active")}
-      ${kpi("사망 선고", dead, dead ? "판정 완료" : "", "status/dead", "--c:var(--dead);--c-bg:var(--dead-bg)")}
-      ${B.meta.phase === "preseason" ? kpi("프리시즌", `${n}<span style="font-size:28px;color:var(--faint)">/${pre.length}</span>`, `${Math.round(n/pre.length*100)}%`, "preseason", "--c:var(--warn);--c-bg:var(--warn-bg)") : ""}
-    </div>
-    <h2>사업 · 파이프라인</h2>${listBlock()}`;
+  return `<section class="card"><div class="card-h"><h3>프리시즌</h3><span class="num muted" style="font-size:12px">${n}/${pre.length}</span><span class="sp"></span><a href="#/preseason">전체 ${svg("arrow")}</a></div>
+    <div class="progress"><i style="width:${n/pre.length*100}%"></i></div>
+    ${pre.filter(x => !x.done).slice(0, 3).map(x => `<div class="chk"><i></i><span>${esc(x.item)}</span></div>`).join("")}</section>`;
+}
+function logMini(){
+  return `<section class="card"><div class="card-h"><h3>최근 기록</h3><span class="sp"></span><a href="#/log">전체 ${svg("arrow")}</a></div>
+    ${B.log.slice(0, 3).map(l => `<div class="logrow"><span class="date num">${md(l.date)}</span><span class="who">${esc(l.who)}</span><span>${esc(l.text)}</span></div>`).join("")}</section>`;
 }
 
-function chartSVG(s){
-  const W = 520, H = 170, vs = s.map(x => x.value), lo = Math.min(...vs), hi = Math.max(...vs), pad = (hi - lo) * .3 || 1;
-  const X = i => 30 + i * (W - 50) / (s.length - 1), Y = v => 12 + (H - 40) * (1 - (v - lo + pad) / (hi - lo + 2 * pad));
-  const pts = s.map((x,i) => [X(i), Y(x.value)]);
-  let d = `M${pts[0]}`; for (let i = 1; i < pts.length; i++){ const [a,b] = pts[i-1], [c,e] = pts[i], m = (a+c)/2; d += ` C${m},${b} ${m},${e} ${c},${e}`; }
-  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="추이 그래프">
-    <line x1="20" x2="${W-10}" y1="${pts[0][1]}" y2="${pts[0][1]}" stroke="var(--faint)" stroke-dasharray="3 4"/>
-    <path d="${d}" fill="none" stroke="var(--ink-2)" stroke-width="2.2" stroke-linecap="round"/>
-    ${pts.map(([x,y],i) => `<circle cx="${x}" cy="${y}" r="${i === pts.length-1 ? 5 : 3}" fill="${i === pts.length-1 ? "var(--ink)" : "var(--card)"}" stroke="var(--ink-2)" stroke-width="1.5"/>`).join("")}
-    ${s.map((x,i) => `<text class="ax" x="${X(i)}" y="${H-6}" text-anchor="middle">${md(x.date)}</text>`).join("")}
-    <text class="ax" x="${pts[pts.length-1][0]}" y="${pts[pts.length-1][1]-12}" text-anchor="middle" style="fill:var(--ink);font-weight:600">${Math.round(vs[vs.length-1]).toLocaleString()}</text></svg>`;
+/* ---------- views ---------- */
+function overview(){
+  return bar("Dashboard", esc(B.meta.tagline)) + `<div class="view enter"><div class="ov">
+    ${kpis()}
+    ${listCard()}
+    <div class="col">${botMini()}${preMini()}${logMini()}</div>
+  </div></div>`;
 }
-function detail(id){
-  const p = B.projects.find(x => x.id === id);
-  if (!p) return head("없음", "해당 항목이 없어요") ;
-  const st = p.stages || [], c = Math.min(p.current|0, st.length - 1);
-  return `<a class="back" href="#/projects">← 사업 · 파이프라인</a>` + head(esc(p.name), `${esc(p.no)} · ${esc(p.what)}`) + `
-    <div class="grid2">
-      <div style="display:flex;flex-direction:column;gap:14px">
-        ${p.series?.length > 1 ? `<div class="box chart"><h3>${esc(p.metric?.label || "추이")} · ${esc(p.metric?.sub || "")}</h3>${chartSVG(p.series)}</div>` : ""}
-        <div class="box"><h3>다음 할 일</h3><div style="font-size:15px">${esc(p.next)}</div>${isDate(p.due) ? `<div style="margin-top:8px;color:var(--muted)" class="num">마감 ${md(p.due)}</div>` : ""}</div>
-        ${p.card ? `<div class="box"><h3>시작 카드</h3><dl class="kv"><dt>질문</dt><dd>${esc(p.card.question)}</dd><dt>마감</dt><dd>${esc(p.card.deadline)}</dd><dt>사망 조건</dt><dd>${esc(p.card.kill)}</dd></dl></div>` : ""}
-        ${p.result ? `<div class="box endcard"><h3>끝 카드 · ${esc(p.result.verdict)}</h3><dl class="kv"><dt>투입</dt><dd>${esc(p.result.spent)} · ${esc(p.result.hours)}</dd><dt>매출</dt><dd>${esc(p.result.revenue)}</dd><dt>이유</dt><dd>${esc(p.result.reason)}</dd></dl></div>` : ""}
-      </div>
-      <div class="box"><h3>단계 <span class="st ${esc(p.status)}" style="float:right">${STN[p.status] || ""}</span></h3>
-        <div class="steps">${st.map((s,i) => `<div class="step ${i < c ? "d" : i === c ? "c" : ""}"><span class="n num">${i < c ? "✓" : i+1}</span><span>${esc(s)}</span></div>`).join("")}</div></div>
-    </div>${p.id === "coinbot" && window.BOT ? botPanel() : ""}`;
+function projectsView(fixed){
+  const title = fixed ? (STN[fixed] || fixed) : "사업 · 파이프라인";
+  return bar(title, "행을 누르면 오른쪽에 상세가 열려요") + `<div class="view enter" style="display:flex;flex-direction:column">${listCard(fixed)}</div>`;
 }
-const COLORS = ["#1E1E1E","#3E9C6A","#C2483B","#A97C1E","#4F6BD8","#8E5BD0","#7B7B7A","#D07A2E","#2A9BB0","#B54E8C"];
-function multiSVG(lines){
-  const all = lines.flatMap(l => l.series.map(x => x.value)), dates = [...new Set(lines.flatMap(l => l.series.map(x => x.date)))].sort();
-  if (dates.length < 2) return "";
-  const W = 620, H = 220, lo = Math.min(...all), hi = Math.max(...all), pad = (hi - lo) * .1 || 1;
-  const X = d => 30 + dates.indexOf(d) * (W - 50) / (dates.length - 1), Y = v => 10 + (H - 40) * (1 - (v - lo + pad) / (hi - lo + 2*pad));
-  const tick = Math.max(1, Math.ceil(dates.length / 6));
-  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="대회 평가금 추이">
-    ${lines.map((l,i) => `<polyline fill="none" stroke="${COLORS[i % COLORS.length]}" stroke-width="${l.key === "bot" ? 2.6 : 1.3}" stroke-linejoin="round" points="${l.series.map(x => `${X(x.date)},${Y(x.value)}`).join(" ")}"/>`).join("")}
-    ${dates.map((d,i) => i % tick && i !== dates.length-1 ? "" : `<text class="ax" x="${X(d)}" y="${H-6}" text-anchor="middle">${md(d)}</text>`).join("")}</svg>
-    <div class="legend">${lines.map((l,i) => `<span><i style="background:${COLORS[i % COLORS.length]}"></i>${esc(l.name)}</span>`).join("")}</div>`;
-}
-const fmt = v => v == null || v === "" ? "—" : Number(v).toLocaleString("en-US", {maximumFractionDigits: 4});
-function botPanel(){
-  const T = window.BOT, f = T.futures, s = T.spot, t = T.tournament;
-  const tabs = [["fut","데모 선물 봇"],["spot","현물 BTC 봇"],["tour","투자대회"]];
+function botBody(compact){
+  const T = window.BOT;
+  if (!T) return `<div class="empty">봇 기록(bot.js)을 아직 못 읽었어요</div>`;
+  const f = T.futures, s = T.spot, t = T.tournament;
+  const seg = `<div class="seg" role="tablist">${[["fut","데모 선물"],["spot","현물 BTC"],["tour","투자대회"]].map(([k,l]) => `<button type="button" role="tab" aria-selected="${state.botTab === k}" class="${state.botTab === k ? "on" : ""}" data-bt="${k}">${l}</button>`).join("")}</div>`;
   let body = "";
-  if (botTab === "fut"){
-    const last = f.series.at(-1)?.value, chg = f.start && last ? (last / f.start - 1) * 100 : null;
-    body = `<div class="kv3"><div><small>지갑</small><b>${fmt(last)}</b></div><div><small>시작 대비</small><b class="${chg >= 0 ? "pos" : "neg"}">${chg == null ? "—" : (chg >= 0 ? "+" : "") + chg.toFixed(2) + "%"}</b></div>
-      <div><small>보유 포지션</small><b>${f.positions.length}</b></div><div><small>BTC 추세</small><b>${esc(f.btc_votes ?? "—")}/6</b></div></div>
-      ${f.series.length > 1 ? `<div class="box chart" style="margin-bottom:14px"><h3>데모 선물 지갑 (USDT) · 마지막 실행 ${esc(f.last)} UTC</h3>${chartSVG(f.series)}</div>` : ""}
-      <div class="box scrollx" style="margin-bottom:14px"><h3>지금 들고 있는 포지션</h3><table class="tbl"><tr><th>코인</th><th>방향</th><th class="r">진입가</th><th class="r">손절가</th><th class="r">익절</th><th>진입일</th></tr>
-        ${f.positions.map(x => `<tr><td>${esc(x.symbol)}</td><td>${esc(x.side)}</td><td class="r num">${fmt(x.entry)}</td><td class="r num">${fmt(x.stop)}</td><td class="r num">${esc(x.tp)}</td><td class="num">${esc(x.opened ? md(x.opened) : "")}</td></tr>`).join("") || `<tr><td colspan="6" class="empty">포지션 없음</td></tr>`}</table></div>
-      <div class="box"><h3>마지막 실행에서 한 일</h3><ul class="acts">${f.actions.map(a => `<li>${esc(a)}</li>`).join("") || "<li>매매 없음</li>"}</ul></div>`;
-  } else if (botTab === "spot"){
+  if (state.botTab === "fut"){
+    const last = f.series.at(-1)?.value, chg = f.start && last ? (last/f.start - 1)*100 : null;
+    body = `<div class="bot-mini" style="grid-template-columns:repeat(${compact ? 2 : 4},1fr)">
+      <div class="stat"><small>지갑 (USDT)</small><b class="num">${fmt(last)}</b></div>
+      <div class="stat"><small>시작 대비</small><b class="num ${chg >= 0 ? "pos" : "neg"}">${chg == null ? "—" : (chg >= 0 ? "+" : "") + chg.toFixed(2) + "%"}</b></div>
+      <div class="stat"><small>포지션</small><b class="num">${f.positions.length}</b></div>
+      <div class="stat"><small>BTC 추세</small><b class="num">${esc(f.btc_votes ?? "—")}/6</b></div></div>
+      <section class="card" style="margin-bottom:10px"><div class="card-h"><h3>지갑 추이</h3><span class="sp"></span><span class="muted" style="font-size:11.5px">마지막 실행 ${esc(f.last)} UTC</span></div>${lineChart([{key:"fut", name:"데모 선물", series:f.series}], {h: compact ? 120 : 200, unit:" USDT"})}</section>
+      <section class="card scrollx" style="margin-bottom:10px"><div class="card-h"><h3>보유 포지션</h3></div><table class="tbl"><tr><th>코인</th><th>방향</th><th class="r">진입가</th><th class="r">손절가</th><th class="r">익절</th><th>진입</th></tr>
+        ${f.positions.map(x => `<tr><td>${esc(x.symbol)}</td><td>${esc(x.side)}</td><td class="r num">${fmt(x.entry)}</td><td class="r num">${fmt(x.stop)}</td><td class="r num">${esc(x.tp)}</td><td class="num">${x.opened ? md(x.opened) : ""}</td></tr>`).join("") || `<tr><td colspan="6" class="empty">포지션 없음</td></tr>`}</table></section>
+      <section class="card"><div class="card-h"><h3>마지막 실행에서 한 일</h3></div><ul class="acts">${f.actions.map(a => `<li>${esc(a)}</li>`).join("") || "<li>매매 없음</li>"}</ul></section>`;
+  } else if (state.botTab === "spot"){
     const last = s.series.at(-1)?.value, first = s.series[0]?.value;
-    body = `<div class="kv3"><div><small>평가금 (USDT)</small><b>${fmt(last)}</b></div><div><small>기록 시작 대비</small><b class="${last >= first ? "pos" : "neg"}">${first ? ((last/first - 1) * 100).toFixed(2) + "%" : "—"}</b></div>
-      <div><small>BTC 비중</small><b>${s.weight ? Math.round(s.weight * 100) + "%" : "—"}</b></div><div><small>추세 투표</small><b>${esc(s.votes ?? "—")}/6</b></div></div>
-      ${s.series.length > 1 ? `<div class="box chart"><h3>현물 BTC 봇 평가금 · BTC ${fmt(s.btc_price)} · 마지막 ${esc(s.last)} UTC</h3>${chartSVG(s.series)}</div>` : ""}`;
+    body = `<div class="bot-mini" style="grid-template-columns:repeat(${compact ? 2 : 4},1fr)">
+      <div class="stat"><small>평가금 (USDT)</small><b class="num">${fmt(last)}</b></div>
+      <div class="stat"><small>기록 시작 대비</small><b class="num ${last >= first ? "pos" : "neg"}">${first ? ((last/first - 1)*100).toFixed(2) + "%" : "—"}</b></div>
+      <div class="stat"><small>BTC 비중</small><b class="num">${s.weight ? Math.round(s.weight*100) + "%" : "—"}</b></div>
+      <div class="stat"><small>추세 투표</small><b class="num">${esc(s.votes ?? "—")}/6</b></div></div>
+      <section class="card"><div class="card-h"><h3>평가금 추이</h3><span class="sp"></span><span class="muted" style="font-size:11.5px">BTC ${fmt(s.btc_price)} · ${esc(s.last)} UTC</span></div>${lineChart([{key:"spot", name:"현물 BTC", series:s.series}], {h: compact ? 120 : 220, unit:" USDT"})}</section>`;
   } else {
-    body = `<div class="box chart" style="margin-bottom:14px"><h3>${esc(t.head || "BTC 봇 모의투자 대회")}</h3>${multiSVG(t.lines)}</div>
-      <div class="box scrollx"><h3>순위</h3><table class="tbl"><tr><th>#</th><th>봇</th><th class="r">평가금</th><th class="r">수익률</th><th class="r">최대낙폭</th><th class="r">BTC 비중</th><th class="r">매매</th></tr>
-        ${t.board.map(b => `<tr class="${b.name.startsWith("①") ? "me" : ""}"><td class="num">${b.rank}</td><td>${esc(b.name)}</td><td class="r num">${esc(b.equity)}</td><td class="r num ${b.ret.startsWith("-") ? "neg" : "pos"}">${esc(b.ret)}</td><td class="r num">${esc(b.mdd)}</td><td class="r num">${esc(b.weight)}</td><td class="r num">${esc(b.trades)}</td></tr>`).join("")}</table></div>`;
+    body = `<section class="card" style="margin-bottom:10px"><div class="card-h"><h3>평가금 추이</h3><span class="sp"></span><span class="muted" style="font-size:11.5px">범례를 눌러 봇 숨기기</span></div>
+        <div class="muted" style="font-size:11.5px;margin:-4px 0 6px">${esc(t.head)}</div>${lineChart(t.lines, {h: compact ? 150 : 240})}</section>
+      <section class="card scrollx"><div class="card-h"><h3>순위</h3></div><table class="tbl"><tr><th>#</th><th>봇</th><th class="r">평가금</th><th class="r">수익률</th>${compact ? "" : `<th class="r">최대낙폭</th><th class="r">BTC 비중</th><th class="r">매매</th>`}</tr>
+        ${t.board.map(b => `<tr class="${b.name.startsWith("①") ? "me" : ""}"><td class="num">${b.rank}</td><td>${esc(b.name)}</td><td class="r num">${esc(b.equity)}</td><td class="r num ${b.ret.startsWith("-") ? "neg" : "pos"}">${esc(b.ret)}</td>${compact ? "" : `<td class="r num">${esc(b.mdd)}</td><td class="r num">${esc(b.weight)}</td><td class="r num">${esc(b.trades)}</td>`}</tr>`).join("")}</table></section>`;
   }
-  return `<h2 style="margin-top:34px">봇 현황</h2><div class="tabs" role="tablist">${tabs.map(([k,l]) => `<button type="button" role="tab" aria-selected="${botTab === k}" class="${botTab === k ? "on" : ""}" data-bt="${k}">${l}</button>`).join("")}</div>${body}
-    <p style="color:var(--faint);font-size:12px;margin-top:12px">데모·모의 계좌 기록 · 투자 조언 아님 · 5분마다 자동 갱신</p>`;
+  return {seg, body};
 }
-function preseason(){
+function botView(){
+  const {seg, body} = botBody(false);
+  return bar("봇 현황", "데모·모의 계좌 · 투자 조언 아님 · 5분마다 갱신", seg || "") + `<div class="view enter">${body}</div>`;
+}
+function preseasonView(){
   const pre = B.preseason, n = pre.filter(x => x.done).length;
-  return head("프리시즌", "Day 1 전에 끝낼 세팅 · 실적 집계는 Day 1부터") + `
-    <div class="bar"><i style="width:${n/pre.length*100}%"></i></div>
-    <div class="well">${pre.map(x => `<div class="check ${x.done ? "done" : ""}"><i>${x.done ? "✓" : ""}</i><span>${esc(x.item)}</span></div>`).join("")}</div>
-    <p style="color:var(--faint);font-size:12.5px;margin-top:14px">체크는 dashboard/data.js의 preseason에서 done을 true로 바꾸면 반영돼요.</p>`;
+  return bar("프리시즌", "Day 1 전에 끝낼 세팅 · 실적 집계는 Day 1부터") + `<div class="view enter"><section class="card" style="max-width:720px">
+    <div class="card-h"><h3>진행률</h3><span class="sp"></span><span class="num">${n}/${pre.length}</span></div><div class="progress"><i style="width:${n/pre.length*100}%"></i></div>
+    ${pre.map(x => `<div class="chk ${x.done ? "done" : ""}"><i>${x.done ? "✓" : ""}</i><span>${esc(x.item)}</span></div>`).join("")}
+    <p class="muted" style="font-size:11.5px;margin:10px 0 0">체크는 dashboard/data.js의 preseason에서 done을 true로 바꾸면 반영돼요.</p></section></div>`;
 }
-function log(){
-  return head("기록", "누가 언제 무엇을 바꿨나") + `<div class="well">${B.log.map(l => `<div class="check"><span class="num" style="width:44px;color:var(--muted);font-size:13px">${md(l.date)}</span><span class="who">${esc(l.who)}</span><span>${esc(l.text)}</span></div>`).join("")}</div>`;
+function logView(){
+  return bar("기록", "누가 언제 무엇을 바꿨나") + `<div class="view enter"><section class="card" style="max-width:820px">${B.log.map(l => `<div class="logrow"><span class="date num">${md(l.date)}</span><span class="who">${esc(l.who)}</span><span>${esc(l.text)}</span></div>`).join("")}</section></div>`;
 }
-async function doc(path){
+async function docView(path){
   const f = (B.docs || []).flatMap(g => g.files).find(x => x.path === path);
   const main = document.getElementById("main");
-  main.innerHTML = head(esc(f?.title || path), esc(path)) + `<div class="doc">불러오는 중…</div>`;
+  main.innerHTML = bar(esc(f?.title || path), esc(path)) + `<div class="view enter"><div class="doc">불러오는 중…</div></div>`;
   try {
     const r = await fetch("../" + path.split("/").map(encodeURIComponent).join("/"), {cache:"no-store"});
     if (!r.ok) throw 0;
-    const html = window.marked ? marked.parse(await r.text()) : `<pre>${esc(await r.text())}</pre>`;
-    if (route().slice(1).join("/") === path) main.querySelector(".doc").innerHTML = html;
-  } catch { main.querySelector(".doc").textContent = "문서를 불러오지 못했어요. 프로젝트 폴더에서 서버를 켰는지 확인하세요."; }
+    const text = await r.text();
+    if (parseHash().r.slice(1).join("/") === path) main.querySelector(".doc").innerHTML = window.marked ? marked.parse(text) : `<pre>${esc(text)}</pre>`;
+  } catch { main.querySelector(".doc").textContent = "문서를 불러오지 못했어요."; }
 }
 
+/* ---------- detail pane ---------- */
+function renderDetail(){
+  const el = document.getElementById("detail-in"), p = B.projects.find(x => x.id === state.sel);
+  document.body.classList.toggle("detail", !!p);
+  if (!p){ el.innerHTML = ""; return; }
+  const st = p.stages || [], c = Math.min(p.current|0, st.length - 1);
+  let bot = "";
+  if (p.id === "coinbot" && window.BOT){ const {seg, body} = botBody(true); bot = `<div class="card-h" style="margin:4px 0 0"><h3>봇 현황</h3><span class="sp"></span>${seg}</div>${body}`; }
+  el.innerHTML = `<div class="bar"><div style="min-width:0"><div class="muted" style="font-size:11.5px">${esc(p.no)}</div><h1 style="font-size:17px">${esc(p.name)}</h1></div><span class="sp"></span>
+      <span class="st ${esc(p.status)}">${STN[p.status] || ""}</span>
+      ${p.id === "coinbot" ? `<a class="iconbtn" href="#/bot" title="크게 보기" aria-label="봇 현황 크게 보기">${svg("expand")}</a>` : ""}
+      <button class="iconbtn" type="button" data-act="close" title="닫기 (esc)" aria-label="닫기">${svg("close")}</button></div>
+    <div class="view enter"><div class="stack">
+      <p class="muted" style="margin:0;font-size:12.5px">${esc(p.what)}</p>
+      <section class="card"><div class="card-h"><h3>다음 할 일</h3>${isDate(p.due) ? `<span class="sp"></span><span class="num muted">마감 ${md(p.due)}</span>` : ""}</div><div style="font-size:13.5px">${esc(p.next)}</div></section>
+      <section class="card"><div class="card-h"><h3>단계</h3><span class="sp"></span><span class="num muted">${c+1}/${st.length}</span></div>
+        <div class="steps">${st.map((s,i) => `<div class="step ${i < c ? "d" : i === c ? "c" : ""}"><span class="n num">${i < c ? "✓" : i+1}</span><span>${esc(s)}</span></div>`).join("")}</div></section>
+      ${p.card ? `<section class="card"><div class="card-h"><h3>시작 카드</h3></div><dl class="kv"><dt>질문</dt><dd>${esc(p.card.question)}</dd><dt>마감</dt><dd>${esc(p.card.deadline)}</dd><dt>사망 조건</dt><dd>${esc(p.card.kill)}</dd></dl></section>` : ""}
+      ${p.result ? `<section class="card endcard"><div class="card-h"><h3>끝 카드 · ${esc(p.result.verdict)}</h3></div><dl class="kv"><dt>투입</dt><dd>${esc(p.result.spent)} · ${esc(p.result.hours)}</dd><dt>매출</dt><dd>${esc(p.result.revenue)}</dd><dt>이유</dt><dd>${esc(p.result.reason)}</dd></dl></section>` : ""}
+      ${bot}
+    </div></div>`;
+  bindCharts(el);
+}
+
+/* ---------- render ---------- */
+function moveInd(root){
+  root.querySelectorAll(".tabs").forEach(t => { const on = t.querySelector("button.on"), ind = t.querySelector(".ind"); if (on && ind){ ind.style.left = on.offsetLeft + "px"; ind.style.width = on.offsetWidth + "px"; } });
+}
 function render(){
-  const r = route(), main = document.getElementById("main");
+  const {r, sel} = parseHash(), main = document.getElementById("main");
+  state.sel = sel; chartData = {};
   renderRail(r); renderSide(r);
-  document.body.classList.remove("open");
-  if (r[0] === "doc") return doc(r.slice(1).join("/"));
-  if (r[0] === "p") main.innerHTML = detail(r[1]);
-  else if (r[0] === "projects") main.innerHTML = head("사업 · 파이프라인", "카드를 누르면 단계와 시작·끝 카드를 볼 수 있어요") + listBlock();
-  else if (r[0] === "status") main.innerHTML = head(STN[r[1]] || r[1], "상태별 보기") + listBlock(r[1]);
-  else if (r[0] === "preseason") main.innerHTML = preseason();
-  else if (r[0] === "log") main.innerHTML = log();
-  else main.innerHTML = dashboard();
-  bindList();
-  document.querySelectorAll("[data-bt]").forEach(b => b.onclick = () => { botTab = b.dataset.bt; render(); });
+  document.body.classList.remove("nav");
+  if (r[0] === "doc") docView(r.slice(1).join("/"));
+  else main.innerHTML = r[0] === "projects" ? projectsView() : r[0] === "status" ? projectsView(r[1]) : r[0] === "bot" ? botView()
+    : r[0] === "preseason" ? preseasonView() : r[0] === "log" ? logView() : r[0] === "p" ? (state.sel = r[1], overview()) : overview();
+  bindCharts(main); moveInd(main);
+  renderDetail();
 }
-window.addEventListener("hashchange", () => { render(); document.getElementById("main").scrollTop = 0; });
-document.getElementById("scrim").onclick = () => document.body.classList.remove("open");
-render();
+function refreshRows(){
+  const rows = document.getElementById("rows"); if (!rows) return;
+  const {r} = parseHash();
+  rows.innerHTML = rowsHTML(filtered(r[0] === "status" ? r[1] : null));
+}
 
-/* data.js가 바뀌면 자동 반영 (10초마다 확인) */
-setInterval(() => {
-  const s = document.createElement("script");
-  s.src = "data.js?t=" + Date.now();
-  s.onload = () => { const prev = JSON.stringify(B); B = window.BOARD; if (JSON.stringify(B) !== prev && !document.activeElement?.matches("input")) render(); s.remove(); };
+/* ---------- events (delegated) ---------- */
+document.addEventListener("click", e => {
+  const t = e.target.closest("[data-p],[data-tab],[data-bt],[data-line],[data-act],[data-folder],.pal-item");
+  if (!t) return;
+  const {r} = parseHash(), path = r[0] === "p" ? "" : r.join("/");
+  if (t.dataset.p){ go(path, state.sel === t.dataset.p ? null : t.dataset.p); }
+  else if (t.dataset.tab){ state.tab = t.dataset.tab; const card = t.closest(".listcard"); card.querySelectorAll("[data-tab]").forEach(b => { b.classList.toggle("on", b === t); b.setAttribute("aria-selected", b === t); }); moveInd(card); refreshRows(); }
+  else if (t.dataset.bt){ state.botTab = t.dataset.bt; chartData = {}; if (parseHash().r[0] === "bot") render(); else renderDetail(); }
+  else if (t.dataset.line){ const k = t.dataset.line; state.hidden.has(k) ? state.hidden.delete(k) : state.hidden.add(k); if (parseHash().r[0] === "bot"){ const v = document.querySelector(".main .view"), y = v.scrollTop; render(); document.querySelector(".main .view").scrollTop = y; } else renderDetail(); }
+  else if (t.dataset.folder){ const f = t.dataset.folder; state.open[f] = t.getAttribute("aria-expanded") === "false"; store.set("tree", state.open); renderSide(parseHash().r); }
+  else if (t.dataset.act === "close"){ go(path, null); }
+  else if (t.dataset.act === "collapse"){ document.body.classList.toggle("collapsed"); store.set("collapsed", document.body.classList.contains("collapsed")); render(); }
+  else if (t.dataset.act === "nav"){ document.body.classList.add("nav"); }
+  else if (t.classList.contains("pal-item")){ closePal(); location.hash = t.dataset.href; }
+});
+document.addEventListener("input", e => {
+  if (e.target.id === "q"){ state.q = e.target.value; refreshRows(); }
+  else if (e.target.id === "docq"){ state.docQ = e.target.value; const v = e.target.value; renderSide(parseHash().r); const n = document.getElementById("docq"); n.focus(); n.setSelectionRange(v.length, v.length); }
+  else if (e.target.id === "pal-q") palRender();
+});
+document.getElementById("scrim").onclick = () => { document.body.classList.remove("nav"); if (state.sel){ const {r} = parseHash(); go(r[0] === "p" ? "" : r.join("/"), null); } };
+document.getElementById("kbtn").onclick = () => openPal();
+window.addEventListener("hashchange", render);
+window.addEventListener("resize", () => moveInd(document));
+
+/* ---------- command palette ---------- */
+let palIdx = 0;
+function palItems(){
+  const views = [["#/", "Dashboard", "화면"], ["#/projects", "사업 · 파이프라인", "화면"], ["#/bot", "봇 현황", "화면"], ["#/preseason", "프리시즌", "화면"], ["#/log", "기록", "화면"]];
+  const projects = B.projects.map(p => [`#/?p=${encodeURIComponent(p.id)}`, p.name, STN[p.status] || "사업"]);
+  const docs = (B.docs || []).flatMap(g => g.files.map(f => [`#/doc/${encodeURI(f.path)}`, f.title, "문서"]));
+  const q = document.getElementById("pal-q").value.trim().toLowerCase();
+  return [...views, ...projects, ...docs].filter(([, t, k]) => !q || (t + k).toLowerCase().includes(q));
+}
+function palRender(){
+  const items = palItems(); palIdx = Math.min(palIdx, Math.max(items.length - 1, 0));
+  document.getElementById("pal-list").innerHTML = items.map(([h, t, k], i) => `<button type="button" role="option" class="pal-item ${i === palIdx ? "on" : ""}" data-href="${esc(h)}" aria-selected="${i === palIdx}">${svg(k === "문서" ? "file" : k === "화면" ? "arrow" : "biz")}${esc(t)}<small>${esc(k)}</small></button>`).join("") || `<div class="empty">결과 없음</div>`;
+}
+function openPal(){ const p = document.getElementById("pal"); p.classList.add("open"); const i = document.getElementById("pal-q"); i.value = ""; palIdx = 0; palRender(); i.focus(); }
+function closePal(){ document.getElementById("pal").classList.remove("open"); }
+document.getElementById("pal").addEventListener("click", e => { if (e.target.id === "pal") closePal(); });
+document.addEventListener("keydown", e => {
+  const pal = document.getElementById("pal").classList.contains("open"), typing = e.target.matches("input,textarea");
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k"){ e.preventDefault(); pal ? closePal() : openPal(); return; }
+  if (pal){
+    const n = palItems().length;
+    if (e.key === "Escape") closePal();
+    else if (e.key === "ArrowDown"){ e.preventDefault(); palIdx = (palIdx + 1) % Math.max(n,1); palRender(); }
+    else if (e.key === "ArrowUp"){ e.preventDefault(); palIdx = (palIdx - 1 + n) % Math.max(n,1); palRender(); }
+    else if (e.key === "Enter"){ const it = document.querySelectorAll(".pal-item")[palIdx]; if (it){ closePal(); location.hash = it.dataset.href; } }
+    return;
+  }
+  if (e.key === "Escape"){ if (document.body.classList.contains("nav")) document.body.classList.remove("nav"); else if (state.sel){ const {r} = parseHash(); go(r[0] === "p" ? "" : r.join("/"), null); } else if (typing) e.target.blur(); return; }
+  if (typing) return;
+  if (e.key === "/"){ const q = document.getElementById("q"); if (q){ e.preventDefault(); q.focus(); } }
+  else if (e.key === "["){ document.querySelector('[data-act="collapse"]')?.click(); }
+  else if ((e.key === "j" || e.key === "k") && document.getElementById("rows")){
+    const ids = [...document.querySelectorAll("#rows [data-p]")].map(b => b.dataset.p); if (!ids.length) return;
+    const i = ids.indexOf(state.sel), next = ids[(i + (e.key === "j" ? 1 : -1) + ids.length) % ids.length];
+    const {r} = parseHash(); go(r[0] === "p" ? "" : r.join("/"), next);
+  }
+});
+
+/* ---------- boot + live refresh ---------- */
+if (store.get("collapsed", false)) document.body.classList.add("collapsed");
+render();
+function reload(src, get, onChange){
+  const before = JSON.stringify(get()), s = document.createElement("script");
+  s.src = src + "?t=" + Date.now();
+  s.onload = () => { s.remove(); if (JSON.stringify(get()) !== before) onChange(); };
   s.onerror = () => s.remove();
   document.head.append(s);
-  const b = document.createElement("script");
-  b.src = "bot.js?t=" + Date.now();
-  const prevBot = JSON.stringify(window.BOT);
-  b.onload = () => { if (route()[1] === "coinbot" && JSON.stringify(window.BOT) !== prevBot) render(); b.remove(); };
-  b.onerror = () => b.remove();
-  document.head.append(b);
+}
+setInterval(() => {
+  const busy = () => document.activeElement?.matches("input") || document.getElementById("pal").classList.contains("open");
+  const changed = () => { if (busy()) return; B = window.BOARD; const v = document.querySelector(".main .view"), y = v?.scrollTop; render(); const nv = document.querySelector(".main .view"); if (nv && y) nv.scrollTop = y; document.getElementById("live")?.classList.add("pulse"); toast("새 데이터가 반영됐어요"); };
+  reload("data.js", () => window.BOARD, changed);
+  reload("bot.js", () => window.BOT, changed);
 }, 10000);
 </script>
 </body>
