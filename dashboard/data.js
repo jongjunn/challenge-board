@@ -107,7 +107,7 @@ window.BOARD = {
       "status": "active",
       "stages": ["포지셔닝·BM", "프리시즌 실행계획", "1화 실제 대본", "채널·계정 세팅", "제작 테스트"],
       "current": 1,
-      "next": "확정한 손글씨 프로필 적용 → 배너·소개문구 → 썸네일·카드 순으로 채널 브랜드 세팅",
+      "next": "직접 쓴 JONGJUN 프로필 적용 → 레퍼런스 장면 확정 → 배너·썸네일·카드 제작",
       "due": "",
       "card": null,
       "result": null
@@ -119,7 +119,8 @@ window.BOARD = {
       { "title": "기획 확정본 · 1화", "path": "01_기획_확정본_1화.md" },
       { "title": "숏폼 제휴 조사", "path": "02_숏폼_제휴_파이프라인_조사.md" },
       { "title": "포지셔닝 · BM", "path": "03_포지셔닝_BM_확정안.md" },
-      { "title": "프리시즌 실행계획", "path": "04_프리시즌_실행계획.md" }
+      { "title": "프리시즌 실행계획", "path": "04_프리시즌_실행계획.md" },
+      { "title": "디자인 · 다큐 문법", "path": "05_디자인_다큐_문법.md" }
     ]},
     { "folder": "리서치", "files": [
       { "title": "국내 벤치마크 계정", "path": "research/codex_kr_accounts.md" }
@@ -130,6 +131,7 @@ window.BOARD = {
     ]}
   ],
   "log": [
+    { "date": "2026-10-05", "who": "Codex", "text": "JONGJUN 디자인·다큐 문법 v0.1 작성 · 레퍼런스를 배너·서사·촬영·장부 역할로 분리" },
     { "date": "2026-10-05", "who": "Codex", "text": "채널명 JONGJUN 확정 · 영문 손글씨 프로필 최종본 저장" },
     { "date": "2026-10-05", "who": "Codex", "text": "손글씨 프로필 최종본 확정 · 중간 굵기 버전을 assets/channel-profile-handwriting-final.png로 저장" },
     { "date": "2026-10-05", "who": "Claude", "text": "LinkFlow(도어락 통합 연동) 후보 등록 · Codex 시장조사 시작" },
