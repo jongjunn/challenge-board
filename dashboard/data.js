@@ -125,7 +125,8 @@ window.BOARD = {
     ]},
     { "folder": "리서치", "files": [
       { "title": "국내 벤치마크 계정", "path": "research/codex_kr_accounts.md" },
-      { "title": "워크플로우 후보 원자료", "path": "research/codex_workflow_candidates.md" }
+      { "title": "워크플로우 후보 원자료", "path": "research/codex_workflow_candidates.md" },
+      { "title": "상위 3개 교차 확인", "path": "research/crosscheck_top3.md" }
     ]},
     { "folder": "운영", "files": [
       { "title": "프로젝트 지도", "path": "claude_project/00_프로젝트_지도.md" },
@@ -133,6 +134,7 @@ window.BOARD = {
     ]}
   ],
   "log": [
+    { "date": "2026-10-06", "who": "Claude", "text": "상위 3개 교차 확인: 엑셀 자동화 유지 (숨고 견적 요청 15,552건, 평균 20만원). 챗봇은 공급 과잉이라 추가 상품으로 강등. 첫 채널은 숨고" },
     { "date": "2026-10-06", "who": "Codex", "text": "기본 브랜드 방향 변경 · 얼굴 프로필 + 크림 배너 + 100만원→10억 + 손글씨 서명" },
     { "date": "2026-10-06", "who": "Claude", "text": "방향 전환: 새로 지어내지 않고 돈이 도는 기존 워크플로우를 복제 → 3번 결제 → 변형 → 자동화. 후보 10개 조사 (1순위 엑셀 자동화 납품, 크몽 거래 219건 확인)" },
     { "date": "2026-10-05", "who": "Codex", "text": "JONGJUN 디자인·다큐 문법 v0.1 작성 · 레퍼런스를 배너·서사·촬영·장부 역할로 분리" },
