@@ -32,13 +32,13 @@ window.BOARD = {
       "no": "후보",
       "name": "LinkFlow",
       "what": "무인공간 개발사용 도어락·IoT 통합 연동 (공식 API만, 연동 외주부터)",
-      "status": "waiting",
+      "status": "dead",
       "stages": ["시장 조사", "개발사 20곳 연락", "첫 유료 연동", "API로 묶기", "판정"],
-      "current": 0,
-      "next": "원안(역분석) 폐기 · 솔리티 공식 API 1계열 × 숙박 임시 PIN 파일럿으로 축소 · Day 1 후 솔리티 문의부터",
+      "current": 4,
+      "next": "종료 · 프리시즌 조사 단계에서 사망",
       "due": "",
       "card": { "question": "무인공간 솔루션 개발사가 도어락 연동 외주에 돈을 낼까?", "deadline": "시작 후 4주", "kill": "20곳 중 유료 의향 0곳, 또는 공식 API로 국내 주요 도어락 연동 불가" },
-      "result": null
+      "result": { "spent": "0원", "hours": "미집계", "revenue": "0원", "verdict": "사망", "reason": "풀 문제가 없음 — 국내 숙박은 카드키+PMS로 이미 해결, 범용 IoT 통합은 Tuya·SmartThings·오토플레이스가 선점" }
     },
     {
       "id": "pitchlens",
@@ -134,6 +134,7 @@ window.BOARD = {
     ]}
   ],
   "log": [
+    { "date": "2026-10-06", "who": "Claude", "text": "LinkFlow 사망 판정 — 해결할 문제가 확인되지 않음 (research/linkflow·seam 조사 3건)" },
     { "date": "2026-10-06", "who": "Claude", "text": "상위 3개 교차 확인: 엑셀 자동화 유지 (숨고 견적 요청 15,552건, 평균 20만원). 챗봇은 공급 과잉이라 추가 상품으로 강등. 첫 채널은 숨고" },
     { "date": "2026-10-06", "who": "Codex", "text": "기본 브랜드 방향 변경 · 얼굴 프로필 + 크림 배너 + 100만원→10억 + 손글씨 서명" },
     { "date": "2026-10-06", "who": "Claude", "text": "방향 전환: 새로 지어내지 않고 돈이 도는 기존 워크플로우를 복제 → 3번 결제 → 변형 → 자동화. 후보 10개 조사 (1순위 엑셀 자동화 납품, 크몽 거래 219건 확인)" },
