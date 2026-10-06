@@ -127,7 +127,8 @@ window.BOARD = {
     { "folder": "리서치", "files": [
       { "title": "국내 벤치마크 계정", "path": "research/codex_kr_accounts.md" },
       { "title": "워크플로우 후보 원자료", "path": "research/codex_workflow_candidates.md" },
-      { "title": "상위 3개 교차 확인", "path": "research/crosscheck_top3.md" }
+      { "title": "상위 3개 교차 확인", "path": "research/crosscheck_top3.md" },
+      { "title": "시작 플랫폼 선택", "path": "research/platform_choice.md" }
     ]},
     { "folder": "운영", "files": [
       { "title": "프로젝트 지도", "path": "claude_project/00_프로젝트_지도.md" },
@@ -135,6 +136,7 @@ window.BOARD = {
     ]}
   ],
   "log": [
+    { "date": "2026-10-06", "who": "Claude", "text": "시작 플랫폼 조사: 숨고 1순위(요청서당 견적 수 제한으로 신규도 비교 대상에 듦, 거래 수수료 0), 크몽은 보조로 동시 등록, 위시켓·프리모아·이랜서 제외" },
     { "date": "2026-10-06", "who": "Claude", "text": "포트폴리오 샘플 3종 제작 (정산·재고발주·거래명세서, 구글시트+Apps Script). 로직 테스트·211행 대조 통과, 실제 구글 시트 실행은 미확인" },
     { "date": "2026-10-06", "who": "Claude", "text": "경력 0 외주 수주 근거 조사 + 워크플로우 v1. 크몽 5만원 건 정산 약 3.9만원, 숨고 고객 1명 획득비 2만~7만원(추정). 프리시즌엔 샘플 3개·템플릿 준비" },
     { "date": "2026-10-06", "who": "Claude", "text": "LinkFlow 사망 판정 — 해결할 문제가 확인되지 않음 (research/linkflow·seam 조사 3건)" },
