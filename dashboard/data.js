@@ -9,7 +9,7 @@ window.BOARD = {
     "goal": "순자산 10억",
     "phase": "preseason",
     "day1": "",
-    "updated": "2026-10-05"
+    "updated": "2026-10-06"
   },
   "ledger": {
     "net_worth": null,
@@ -120,10 +120,12 @@ window.BOARD = {
       { "title": "숏폼 제휴 조사", "path": "02_숏폼_제휴_파이프라인_조사.md" },
       { "title": "포지셔닝 · BM", "path": "03_포지셔닝_BM_확정안.md" },
       { "title": "프리시즌 실행계획", "path": "04_프리시즌_실행계획.md" },
-      { "title": "디자인 · 다큐 문법", "path": "05_디자인_다큐_문법.md" }
+      { "title": "디자인 · 다큐 문법", "path": "05_디자인_다큐_문법.md" },
+      { "title": "복제 후보 워크플로우 10개", "path": "06_복제_후보_워크플로우.md" }
     ]},
     { "folder": "리서치", "files": [
-      { "title": "국내 벤치마크 계정", "path": "research/codex_kr_accounts.md" }
+      { "title": "국내 벤치마크 계정", "path": "research/codex_kr_accounts.md" },
+      { "title": "워크플로우 후보 원자료", "path": "research/codex_workflow_candidates.md" }
     ]},
     { "folder": "운영", "files": [
       { "title": "프로젝트 지도", "path": "claude_project/00_프로젝트_지도.md" },
@@ -131,6 +133,7 @@ window.BOARD = {
     ]}
   ],
   "log": [
+    { "date": "2026-10-06", "who": "Claude", "text": "방향 전환: 새로 지어내지 않고 돈이 도는 기존 워크플로우를 복제 → 3번 결제 → 변형 → 자동화. 후보 10개 조사 (1순위 엑셀 자동화 납품, 크몽 거래 219건 확인)" },
     { "date": "2026-10-05", "who": "Codex", "text": "JONGJUN 디자인·다큐 문법 v0.1 작성 · 레퍼런스를 배너·서사·촬영·장부 역할로 분리" },
     { "date": "2026-10-05", "who": "Codex", "text": "채널명 JONGJUN 확정 · 영문 손글씨 프로필 최종본 저장" },
     { "date": "2026-10-05", "who": "Codex", "text": "손글씨 프로필 최종본 확정 · 중간 굵기 버전을 assets/channel-profile-handwriting-final.png로 저장" },
