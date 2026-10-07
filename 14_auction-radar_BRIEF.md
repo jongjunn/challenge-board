@@ -500,6 +500,7 @@ RadarError(code, message, context: dict, retryable=False, fatal=False)
 - [x] v2 브리프 (클라우드 세션)
 - [x] v2 외부 검토 → v3 수정안 확정 (클라우드 세션)
 - [x] v3 확정: 차세대 온비드 API 반영 (맥 세션, 2026-10-07)
-- [ ] 1단계 구현 + 테스트
-- [ ] 비공개 저장소 생성, Actions 연결
+- [x] 1단계 구현 + 테스트 54개 통과 (Codex 구현 → Claude 검토·버그 3건 수정, 2026-10-07)
+- [x] 비공개 저장소 생성, Actions 연결 → github.com/jongjunn/auction-radar (로컬: `auction-radar/`)
+- [x] 실제 공공 API에 가짜 키로 호출 → 403·코드 30을 E-UPSTREAM-AUTH(종료 코드 3)로 분류 확인
 - [ ] 키 발급 후 `--dry-run` 첫 실행 → 필드 보정
