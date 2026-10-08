@@ -552,4 +552,6 @@ RadarError(code, message, context: dict, retryable=False, fatal=False)
 - [x] 1단계 구현 + 테스트 54개 통과 (Codex 구현 → Claude 검토·버그 3건 수정, 2026-10-07)
 - [x] 비공개 저장소 생성, Actions 연결 → github.com/jongjunn/auction-radar (로컬: `auction-radar/`)
 - [x] 실제 공공 API에 가짜 키로 호출 → 403·코드 30을 E-UPSTREAM-AUTH(종료 코드 3)로 분류 확인
-- [ ] 키 발급 후 `--dry-run` 첫 실행 → 필드 보정
+- [x] v3.1: 외부 검토 F01~F11·O02·O03 반영, 테스트 74개 + GitHub CI 통과 (2026-10-08, 커밋 e8ab1fc)
+- [ ] 키 발급 후 `--dry-run` 첫 실행 → 필드 보정 (비교 불가 비율, 금액 기준·지분/일괄 플래그 채움률 확인)
+- [ ] 14일 내부 운영 관찰 → 15-5 항목 착수 여부 판단

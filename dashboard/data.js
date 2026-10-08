@@ -9,7 +9,7 @@ window.BOARD = {
     "goal": "순자산 10억",
     "phase": "preseason",
     "day1": "",
-    "updated": "2026-10-07"
+    "updated": "2026-10-08"
   },
   "ledger": {
     "net_worth": null,
@@ -154,6 +154,7 @@ window.BOARD = {
     ]}
   ],
   "log": [
+    { "date": "2026-10-08", "who": "Claude", "text": "auction-radar v3.1 — 외부 검토 반영: 단가·산 지번·용도·지분/일괄 미상은 비교 불가로, 보강 API 장애가 알림을 막지 않게. 테스트 74개·CI 통과. 고객·결제 장부는 유료 시험 직전으로 보류" },
     { "date": "2026-10-07", "who": "Claude", "text": "auction-radar 1단계 구현 완료 — 테스트 54개 통과, 비공개 저장소 jongjunn/auction-radar. 남은 것: API 키·텔레그램 봇 발급 후 첫 실행" },
     { "date": "2026-10-07", "who": "Claude", "text": "auction-radar 브리프 v3 확정 — 온비드가 2026-01 차세대 API(B010003)로 바뀐 것 확인, PNU 기반으로 주소 파서 제거. 1단계 구현 착수" },
     { "date": "2026-10-07", "who": "Claude", "text": "결제까지 워크플로우 조사 09~12 정리 (개발 외주 / 숏폼·AI 캐릭터 / 전 분야 / 자동화 반복수익), 경매 도메인 비교 13(요약 복원본)" },
