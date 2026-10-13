@@ -9,7 +9,7 @@ window.BOARD = {
     "goal": "순자산 10억",
     "phase": "preseason",
     "day1": "",
-    "updated": "2026-10-08"
+    "updated": "2026-10-14"
   },
   "ledger": {
     "net_worth": null,
@@ -57,15 +57,15 @@ window.BOARD = {
       "id": "coinbot",
       "no": "파이프라인",
       "name": "코인 자동매매 봇",
-      "what": "바이낸스 현물 BTC 추세 봇 + 데모 선물 봇 (내 돈 실험)",
-      "status": "active",
+      "what": "바이낸스 현물 BTC 추세 봇 + 데모 선물 봇 (내 돈 실험) — 10/14 전부 정지",
+      "status": "paused",
       "stages": ["전략 검증", "데모 운용", "맥미니 배포", "실전 전환"],
       "current": 1,
-      "next": "매일 09:07 기록 누적 · 손절폭 넓은 코인은 진입금 줄여 손실 1%로 맞출지 결정",
+      "next": "매크로·고래 스윙 규칙 7개 검증 결과 기존 일간 추세봇보다 나은 것 없음 → 봇 재가동 여부 결정 대기",
       "due": "",
       "card": null,
       "result": null,
-      "metric": { "label": "데모 선물 지갑", "value": "4,973 USDT", "sub": "시작 4,985 · 10/1~10/4" },
+      "metric": { "label": "데모 선물 지갑 (정지 시점)", "value": "4,784 USDT", "sub": "시작 4,985 · 10/1~10/13 · 현물 데모 -3.0%" },
       "series": [
         { "date": "2026-10-01", "value": 4985.13 },
         { "date": "2026-10-02", "value": 4958.36 },
@@ -154,6 +154,7 @@ window.BOARD = {
     ]}
   ],
   "log": [
+    { "date": "2026-10-14", "who": "Claude", "text": "코인 봇 전부 정지 (현물·선물 데모·모의대회, 수집기만 유지). 매크로·고래 스윙 규칙 7개 백테스트 — 기존 일간 추세봇을 넘은 규칙 없음 (coin_trend_paper/research_macro_whale.md)" },
     { "date": "2026-10-08", "who": "Claude", "text": "auction-radar v3.1 — 외부 검토 반영: 단가·산 지번·용도·지분/일괄 미상은 비교 불가로, 보강 API 장애가 알림을 막지 않게. 테스트 74개·CI 통과. 고객·결제 장부는 유료 시험 직전으로 보류" },
     { "date": "2026-10-07", "who": "Claude", "text": "auction-radar 1단계 구현 완료 — 테스트 54개 통과, 비공개 저장소 jongjunn/auction-radar. 남은 것: API 키·텔레그램 봇 발급 후 첫 실행" },
     { "date": "2026-10-07", "who": "Claude", "text": "auction-radar 브리프 v3 확정 — 온비드가 2026-01 차세대 API(B010003)로 바뀐 것 확인, PNU 기반으로 주소 파서 제거. 1단계 구현 착수" },
