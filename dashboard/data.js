@@ -154,6 +154,7 @@ window.BOARD = {
     ]}
   ],
   "log": [
+    { "date": "2026-10-14", "who": "Claude", "text": "섹터·대장주·도미넌스 딥리서치(코덱스) + 7개 가설 검증 — 대장→후발 따라잡기·도미넌스 타이밍·섹터 로테이션 모두 실패. 섹터 모멘텀 롱숏만 2024~ 샤프 0.63 (2020~23은 약함) (coin_trend_paper/research_sector_dominance.md)" },
     { "date": "2026-10-14", "who": "Claude", "text": "알트 스윙 9개 가설 검증 (851개 선물, 상장폐지 포함) — 2024년 이후 통하는 규칙 없음. 같은 기간 알트 상위 100개 보유는 연 -46% (coin_trend_paper/research_alt_swing.md)" },
     { "date": "2026-10-14", "who": "Claude", "text": "코인 봇 전부 정지 (현물·선물 데모·모의대회, 수집기만 유지). 매크로·고래 스윙 규칙 7개 백테스트 — 기존 일간 추세봇을 넘은 규칙 없음 (coin_trend_paper/research_macro_whale.md)" },
     { "date": "2026-10-08", "who": "Claude", "text": "auction-radar v3.1 — 외부 검토 반영: 단가·산 지번·용도·지분/일괄 미상은 비교 불가로, 보강 API 장애가 알림을 막지 않게. 테스트 74개·CI 통과. 고객·결제 장부는 유료 시험 직전으로 보류" },
