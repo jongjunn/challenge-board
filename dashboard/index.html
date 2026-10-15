@@ -33,8 +33,8 @@ svg.i{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.7;stro
 .win{height:100%;display:grid;grid-template-columns:56px var(--side) minmax(0,1fr) 0;gap:10px;background:var(--win);border-radius:24px;padding:10px;
   box-shadow:0 24px 60px rgba(0,0,0,.16),inset 0 1px 0 rgba(255,255,255,.7);transition:grid-template-columns .32s var(--ease)}
 body.collapsed .win{grid-template-columns:56px 0 minmax(0,1fr) 0}
-body.detail .win{grid-template-columns:56px var(--side) minmax(0,1fr) var(--detail)}
-body.collapsed.detail .win{grid-template-columns:56px 0 minmax(0,1fr) var(--detail)}
+body.has-detail .win{grid-template-columns:56px var(--side) minmax(0,1fr) var(--detail)}
+body.collapsed.has-detail .win{grid-template-columns:56px 0 minmax(0,1fr) var(--detail)}
 
 /* rail */
 .railwrap{display:flex;flex-direction:column;gap:10px;background:rgba(255,255,255,.35);border-radius:18px;padding:5px;box-shadow:var(--hi);min-height:0}
@@ -151,8 +151,8 @@ body.collapsed .side-in{opacity:0;pointer-events:none}
 .st{justify-self:end;font-size:11px;font-weight:600;padding:3px 8px;border-radius:7px;background:var(--b);color:var(--c);white-space:nowrap}
 .st.active{--b:var(--ok-bg);--c:var(--ok)}.st.waiting{--b:var(--warn-bg);--c:var(--warn)}.st.dead{--b:var(--dead-bg);--c:var(--dead)}.st.paused{--b:var(--off-bg);--c:var(--off)}.st.done{--b:var(--off-bg);--c:var(--ink-2)}
 @media (max-width:1680px){
-  body.detail .row{grid-template-columns:34px minmax(0,1fr) minmax(0,.9fr) 62px}
-  body.detail .row .c4{display:none}
+  body.has-detail .row{grid-template-columns:34px minmax(0,1fr) minmax(0,.9fr) 62px}
+  body.has-detail .row .c4{display:none}
 }
 .empty{padding:28px 10px;text-align:center;color:var(--faint);font-size:12.5px}
 
@@ -253,18 +253,18 @@ dl.kv dt{color:var(--muted)} dl.kv dd{margin:0}
 
 /* ---------- responsive ---------- */
 @media (max-width:1279px){
-  body.detail .win,body.collapsed.detail .win{grid-template-columns:56px var(--side) minmax(0,1fr) 0}
-  body.collapsed.detail .win{grid-template-columns:56px 0 minmax(0,1fr) 0}
+  body.has-detail .win,body.collapsed.has-detail .win{grid-template-columns:56px var(--side) minmax(0,1fr) 0}
+  body.collapsed.has-detail .win{grid-template-columns:56px 0 minmax(0,1fr) 0}
   .detail{position:fixed;z-index:40;top:22px;bottom:22px;right:22px;width:min(var(--detail),calc(100vw - 44px));transform:translateX(calc(100% + 30px));transition:transform .3s var(--ease);box-shadow:0 20px 60px rgba(0,0,0,.25)}
-  body.detail .detail{transform:none}
-  body.detail .scrim{display:block;position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.12)}
+  body.has-detail .detail{transform:none}
+  body.has-detail .scrim{display:block;position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.12)}
   .detail-in{width:100%}
 }
 @media (max-width:1100px){
   .kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
 @media (max-width:1023px){
-  .win,body.collapsed .win,body.detail .win,body.collapsed.detail .win{grid-template-columns:56px 0 minmax(0,1fr) 0}
+  .win,body.collapsed .win,body.has-detail .win,body.collapsed.has-detail .win{grid-template-columns:56px 0 minmax(0,1fr) 0}
   .side{position:fixed;z-index:45;top:22px;bottom:22px;left:78px;width:var(--side);transform:translateX(calc(-100% - 90px));transition:transform .3s var(--ease);box-shadow:0 20px 60px rgba(0,0,0,.22)}
   body.collapsed .side-in{opacity:1;pointer-events:auto}
   body.nav .side{transform:none}
@@ -277,7 +277,7 @@ dl.kv dt{color:var(--muted)} dl.kv dd{margin:0}
 @media (max-width:760px){
   body{overflow:auto}
   .desk{height:auto;min-height:100vh;padding:8px}
-  .win,body.collapsed .win,body.detail .win,body.collapsed.detail .win{display:flex;flex-direction:column;height:auto;min-height:calc(100vh - 16px);padding:8px;border-radius:20px}
+  .win,body.collapsed .win,body.has-detail .win,body.collapsed.has-detail .win{display:flex;flex-direction:column;height:auto;min-height:calc(100vh - 16px);padding:8px;border-radius:20px}
   .railwrap{flex-direction:row;padding:4px}
   .rail{flex-direction:row;padding:0 8px;flex:1;justify-content:space-around}
   .rail .mark{border:0;padding:0;margin:0;width:auto}
@@ -350,7 +350,7 @@ const I = {
   expand:'<path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/>'
 };
 const svg = k => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${I[k]}</svg>`;
-const state = {tab:"all", q:"", docQ:"", botTab:"fut", sel:null, hidden:new Set(), open:store.get("tree", {})};
+const state = {tab:"all", q:"", docQ:"", botTab:"spot", sel:null, hidden:new Set(), open:store.get("tree", {})};
 const parseHash = () => {
   const [path, qs] = location.hash.replace(/^#\/?/, "").split("?");
   return {r: (path || "").split("/").map(decodeURIComponent), sel: new URLSearchParams(qs || "").get("p")};
@@ -494,15 +494,16 @@ function kpis(){
   </div>`;
 }
 function botMini(){
-  const T = window.BOT; if (!T) return "";
-  const f = T.futures, s = T.spot, last = f.series.at(-1)?.value, chg = f.start && last ? (last/f.start - 1)*100 : null, sl = s.series.at(-1)?.value;
-  const me = T.tournament.board.find(b => b.name.startsWith("①"));
-  return `<section class="card"><div class="card-h"><h3>봇 현황</h3><span class="sub muted" style="font-size:11.5px">데모 · 모의</span><span class="sp"></span><a href="#/bot">자세히 ${svg("arrow")}</a></div>
-    <div class="bot-mini"><div class="stat"><small>데모 선물 지갑</small><b class="num">${fmt(last)}</b> <span class="num ${chg >= 0 ? "pos" : "neg"}" style="font-size:11.5px">${chg == null ? "" : (chg >= 0 ? "+" : "") + chg.toFixed(2) + "%"}</span></div>
-      <div class="stat"><small>현물 BTC 봇</small><b class="num">${fmt(sl)}</b> <span class="muted" style="font-size:11.5px">BTC ${s.weight ? Math.round(s.weight*100) + "%" : "—"}</span></div></div>
-    ${lineChart([{key:"fut", name:"데모 선물", series:f.series}], {h:92, unit:" USDT"})}
-    <div class="card-h" style="margin:10px 0 4px"><h3 style="font-size:12px">투자대회 TOP 3</h3><span class="sp"></span>${me ? `<span class="muted" style="font-size:11.5px">지금 봇 ${me.rank}위</span>` : ""}</div>
-    ${T.tournament.board.slice(0,3).map(b => `<div class="rank ${b.name.startsWith("①") ? "me" : ""}"><span class="n num">${b.rank}</span><span class="nm">${esc(b.name)}</span><span class="num ${b.ret.startsWith("-") ? "neg" : "pos"}">${esc(b.ret)}</span></div>`).join("")}
+  const T = window.BOT; if (!T || !T.futures?.sector) return "";
+  const f = T.futures, s = T.spot, fl = f.series.at(-1)?.value, sl = s.series.at(-1)?.value;
+  const pct = (a, b) => a && b ? (a/b - 1)*100 : null, fp = pct(fl, f.start), sp = pct(sl, s.start);
+  const tag = v => v == null ? "" : `<span class="num ${v >= 0 ? "pos" : "neg"}" style="font-size:11.5px">${(v >= 0 ? "+" : "") + v.toFixed(2)}%</span>`;
+  return `<section class="card"><div class="card-h"><h3>봇 현황</h3><span class="muted" style="font-size:11.5px">데모 · 10/14 재가동</span><span class="sp"></span><a href="#/bot">자세히 ${svg("arrow")}</a></div>
+    <div class="bot-mini"><div class="stat"><small>현물 3코인 봇</small><b class="num">${fmt(sl)}</b> ${tag(sp)}</div>
+      <div class="stat"><small>선물 계좌 (섹터·쏠림)</small><b class="num">${fmt(fl)}</b> ${tag(fp)}</div></div>
+    ${lineChart([{key:"spot", name:"현물 3코인", series:s.series}, {key:"fut", name:"선물 계좌", series:f.series}], {h:92, unit:" USDT"})}
+    <div class="rank"><span class="nm">섹터 롱숏 · 롱 ${esc(f.sector.longs || "—")} / 숏 ${esc(f.sector.shorts || "—")}</span><span class="num muted">${esc(f.sector.n_long ?? 0)}·${esc(f.sector.n_short ?? 0)}개</span></div>
+    <div class="rank"><span class="nm">쏠림 봇 · 오늘 신호 ${esc(f.crowd.signals ?? 0)}개</span><span class="num muted">보유 ${f.crowd.positions.length}</span></div>
   </section>`;
 }
 function preMini(){
@@ -530,33 +531,40 @@ function projectsView(fixed){
 }
 function botBody(compact){
   const T = window.BOT;
-  if (!T) return `<div class="empty">봇 기록(bot.js)을 아직 못 읽었어요</div>`;
+  if (!T || !T.futures?.sector) return {seg:"", body:`<div class="empty">봇 기록(bot.js)을 아직 못 읽었어요</div>`};
   const f = T.futures, s = T.spot, t = T.tournament;
-  const seg = `<div class="seg" role="tablist">${[["fut","데모 선물"],["spot","현물 BTC"],["tour","투자대회"]].map(([k,l]) => `<button type="button" role="tab" aria-selected="${state.botTab === k}" class="${state.botTab === k ? "on" : ""}" data-bt="${k}">${l}</button>`).join("")}</div>`;
+  const tabs = [["spot","현물 3코인"],["sector","섹터 롱숏"],["crowd","쏠림 봇"],["tour","투자대회"]];
+  if (!tabs.some(([k]) => k === state.botTab)) state.botTab = "spot";
+  const seg = `<div class="seg" role="tablist">${tabs.map(([k,l]) => `<button type="button" role="tab" aria-selected="${state.botTab === k}" class="${state.botTab === k ? "on" : ""}" data-bt="${k}">${l}</button>`).join("")}</div>`;
+  const cols = compact ? 2 : 4, pct = (a, b) => a && b ? ((a/b - 1)*100) : null;
+  const pc = v => v == null ? "—" : `<span class="${v >= 0 ? "pos" : "neg"}">${(v >= 0 ? "+" : "") + v.toFixed(2)}%</span>`;
+  const stats = list => `<div class="bot-mini" style="grid-template-columns:repeat(${cols},1fr)">${list.map(([l, v]) => `<div class="stat"><small>${l}</small><b class="num">${v}</b></div>`).join("")}</div>`;
+  const acts = (title, a, when) => `<section class="card"><div class="card-h"><h3>${title}</h3><span class="sp"></span><span class="muted" style="font-size:11.5px">${esc(when || "")} UTC</span></div><ul class="acts">${a.map(x => `<li>${esc(x)}</li>`).join("") || "<li>매매 없음</li>"}</ul></section>`;
+  const fchart = h => `<section class="card" style="margin-bottom:10px"><div class="card-h"><h3>선물 계좌 추이</h3><span class="sp"></span><span class="muted" style="font-size:11.5px">섹터 봇 + 쏠림 봇이 같은 계좌</span></div>${lineChart([{key:"fut", name:"선물 계좌", series:f.series}], {h, unit:" USDT"})}</section>`;
   let body = "";
-  if (state.botTab === "fut"){
-    const last = f.series.at(-1)?.value, chg = f.start && last ? (last/f.start - 1)*100 : null;
-    body = `<div class="bot-mini" style="grid-template-columns:repeat(${compact ? 2 : 4},1fr)">
-      <div class="stat"><small>지갑 (USDT)</small><b class="num">${fmt(last)}</b></div>
-      <div class="stat"><small>시작 대비</small><b class="num ${chg >= 0 ? "pos" : "neg"}">${chg == null ? "—" : (chg >= 0 ? "+" : "") + chg.toFixed(2) + "%"}</b></div>
-      <div class="stat"><small>포지션</small><b class="num">${f.positions.length}</b></div>
-      <div class="stat"><small>BTC 추세</small><b class="num">${esc(f.btc_votes ?? "—")}/6</b></div></div>
-      <section class="card" style="margin-bottom:10px"><div class="card-h"><h3>지갑 추이</h3><span class="sp"></span><span class="muted" style="font-size:11.5px">마지막 실행 ${esc(f.last)} UTC</span></div>${lineChart([{key:"fut", name:"데모 선물", series:f.series}], {h: compact ? 120 : 200, unit:" USDT"})}</section>
-      <section class="card scrollx" style="margin-bottom:10px"><div class="card-h"><h3>보유 포지션</h3></div><table class="tbl"><tr><th>코인</th><th>방향</th><th class="r">진입가</th><th class="r">손절가</th><th class="r">익절</th><th>진입</th></tr>
-        ${f.positions.map(x => `<tr><td>${esc(x.symbol)}</td><td>${esc(x.side)}</td><td class="r num">${fmt(x.entry)}</td><td class="r num">${fmt(x.stop)}</td><td class="r num">${esc(x.tp)}</td><td class="num">${x.opened ? md(x.opened) : ""}</td></tr>`).join("") || `<tr><td colspan="6" class="empty">포지션 없음</td></tr>`}</table></section>
-      <section class="card"><div class="card-h"><h3>마지막 실행에서 한 일</h3></div><ul class="acts">${f.actions.map(a => `<li>${esc(a)}</li>`).join("") || "<li>매매 없음</li>"}</ul></section>`;
-  } else if (state.botTab === "spot"){
-    const last = s.series.at(-1)?.value, first = s.series[0]?.value;
-    body = `<div class="bot-mini" style="grid-template-columns:repeat(${compact ? 2 : 4},1fr)">
-      <div class="stat"><small>평가금 (USDT)</small><b class="num">${fmt(last)}</b></div>
-      <div class="stat"><small>기록 시작 대비</small><b class="num ${last >= first ? "pos" : "neg"}">${first ? ((last/first - 1)*100).toFixed(2) + "%" : "—"}</b></div>
-      <div class="stat"><small>BTC 비중</small><b class="num">${s.weight ? Math.round(s.weight*100) + "%" : "—"}</b></div>
-      <div class="stat"><small>추세 투표</small><b class="num">${esc(s.votes ?? "—")}/6</b></div></div>
-      <section class="card"><div class="card-h"><h3>평가금 추이</h3><span class="sp"></span><span class="muted" style="font-size:11.5px">BTC ${fmt(s.btc_price)} · ${esc(s.last)} UTC</span></div>${lineChart([{key:"spot", name:"현물 BTC", series:s.series}], {h: compact ? 120 : 220, unit:" USDT"})}</section>`;
+  if (state.botTab === "spot"){
+    const last = s.series.at(-1)?.value;
+    body = stats([["평가금 (USDT)", fmt(last)], ["시작 대비", pc(pct(last, s.start))], ["코인", s.coins.length], ["마지막 실행", esc((s.last || "").slice(5))]]) + `
+      <section class="card" style="margin-bottom:10px"><div class="card-h"><h3>평가금 추이</h3><span class="sp"></span><span class="muted" style="font-size:11.5px">10/14 시작 ${fmt(s.start)}</span></div>${lineChart([{key:"spot", name:"현물 3코인", series:s.series}], {h: compact ? 120 : 220, unit:" USDT"})}</section>
+      <section class="card scrollx"><div class="card-h"><h3>코인별 비중</h3></div><table class="tbl"><tr><th>코인</th><th class="r">추세</th><th class="r">목표 비중</th><th class="r">현재 비중</th><th class="r">가격</th></tr>
+        ${s.coins.map(c => `<tr><td>${esc(c.coin)}</td><td class="r num">${esc(c.ups)}/6</td><td class="r num">${Math.round(c.target*100)}%</td><td class="r num">${Math.round(c.held*100)}%</td><td class="r num">${fmt(c.price)}</td></tr>`).join("")}</table></section>`;
+  } else if (state.botTab === "sector"){
+    const x = f.sector, last = f.series.at(-1)?.value;
+    body = stats([["선물 계좌", fmt(last)], ["시작 대비", pc(pct(last, f.start))], ["롱 섹터", esc(x.longs || "—")], ["숏 섹터", esc(x.shorts || "—")]]) + fchart(compact ? 110 : 200) + `
+      ${stats([["롱 포지션", esc(x.n_long ?? 0)], ["숏 포지션", esc(x.n_short ?? 0)], ["리밸런스 주", esc(x.week ? md(x.week) : "—")], ["오류", esc(x.errors ?? 0)]])}
+      ${acts("이번 주 리밸런스에서 한 일", x.actions, x.last)}`;
+  } else if (state.botTab === "crowd"){
+    const x = f.crowd;
+    body = stats([["감시 코인", esc(x.universe ?? "—")], ["오늘 신호", esc(x.signals ?? 0)], ["보유 포지션", x.positions.length], ["오류", esc(x.errors ?? 0)]]) + `
+      <p class="muted" style="font-size:12px;margin:0 0 10px">롱숏 비율 ≤0.4(숏 몰림)이면 롱, ≥4.0(롱 몰림)이면 숏 · 건당 지갑 4% · 최대 45일 · 실거래 전환은 기준 5개 모두 충족 후</p>
+      <section class="card scrollx" style="margin-bottom:10px"><div class="card-h"><h3>보유 포지션</h3></div><table class="tbl"><tr><th>코인</th><th>방향</th><th class="r">진입가</th><th class="r">보유일</th><th>진입</th></tr>
+        ${x.positions.map(p => `<tr><td>${esc(p.symbol)}</td><td>${esc(p.side)}</td><td class="r num">${fmt(p.entry)}</td><td class="r num">${esc(p.days ?? 0)}</td><td class="num">${p.opened ? md(p.opened) : ""}</td></tr>`).join("") || `<tr><td colspan="5" class="empty">아직 신호 없음</td></tr>`}</table></section>
+      ${acts("마지막 실행에서 한 일", x.actions, x.last)}`;
   } else {
-    body = `<section class="card" style="margin-bottom:10px"><div class="card-h"><h3>평가금 추이</h3><span class="sp"></span><span class="muted" style="font-size:11.5px">범례를 눌러 봇 숨기기</span></div>
+    body = `<p class="muted" style="font-size:12px;margin:0 0 10px">10/14 봇 재정비 때 정지한 대회의 마지막 기록이에요.</p>
+      <section class="card" style="margin-bottom:10px"><div class="card-h"><h3>평가금 추이</h3><span class="sp"></span><span class="muted" style="font-size:11.5px">범례를 눌러 봇 숨기기</span></div>
         <div class="muted" style="font-size:11.5px;margin:-4px 0 6px">${esc(t.head)}</div>${lineChart(t.lines, {h: compact ? 150 : 240})}</section>
-      <section class="card scrollx"><div class="card-h"><h3>순위</h3></div><table class="tbl"><tr><th>#</th><th>봇</th><th class="r">평가금</th><th class="r">수익률</th>${compact ? "" : `<th class="r">최대낙폭</th><th class="r">BTC 비중</th><th class="r">매매</th>`}</tr>
+      <section class="card scrollx"><div class="card-h"><h3>최종 순위</h3></div><table class="tbl"><tr><th>#</th><th>봇</th><th class="r">평가금</th><th class="r">수익률</th>${compact ? "" : `<th class="r">최대낙폭</th><th class="r">BTC 비중</th><th class="r">매매</th>`}</tr>
         ${t.board.map(b => `<tr class="${b.name.startsWith("①") ? "me" : ""}"><td class="num">${b.rank}</td><td>${esc(b.name)}</td><td class="r num">${esc(b.equity)}</td><td class="r num ${b.ret.startsWith("-") ? "neg" : "pos"}">${esc(b.ret)}</td>${compact ? "" : `<td class="r num">${esc(b.mdd)}</td><td class="r num">${esc(b.weight)}</td><td class="r num">${esc(b.trades)}</td>`}</tr>`).join("")}</table></section>`;
   }
   return {seg, body};
@@ -590,7 +598,7 @@ async function docView(path){
 /* ---------- detail pane ---------- */
 function renderDetail(){
   const el = document.getElementById("detail-in"), p = B.projects.find(x => x.id === state.sel);
-  document.body.classList.toggle("detail", !!p);
+  document.body.classList.toggle("has-detail", !!p);
   if (!p){ el.innerHTML = ""; return; }
   const st = p.stages || [], c = Math.min(p.current|0, st.length - 1);
   let bot = "";
@@ -600,7 +608,7 @@ function renderDetail(){
       ${p.id === "coinbot" ? `<a class="iconbtn" href="#/bot" title="크게 보기" aria-label="봇 현황 크게 보기">${svg("expand")}</a>` : ""}
       <button class="iconbtn" type="button" data-act="close" title="닫기 (esc)" aria-label="닫기">${svg("close")}</button></div>
     <div class="view enter"><div class="stack">
-      <p class="muted" style="margin:0;font-size:12.5px">${esc(p.what)}</p>
+      <p class="muted" style="margin:0;font-size:12.5px">${esc(p.what)}</p>${p.note ? `<section class="card" style="background:var(--warn-bg)"><div style="font-size:12.5px">${esc(p.note)}</div></section>` : ""}
       <section class="card"><div class="card-h"><h3>다음 할 일</h3>${isDate(p.due) ? `<span class="sp"></span><span class="num muted">마감 ${md(p.due)}</span>` : ""}</div><div style="font-size:13.5px">${esc(p.next)}</div></section>
       <section class="card"><div class="card-h"><h3>단계</h3><span class="sp"></span><span class="num muted">${c+1}/${st.length}</span></div>
         <div class="steps">${st.map((s,i) => `<div class="step ${i < c ? "d" : i === c ? "c" : ""}"><span class="n num">${i < c ? "✓" : i+1}</span><span>${esc(s)}</span></div>`).join("")}</div></section>
