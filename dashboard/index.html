@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>박종준 챌린지 보드</title>
+<title>JONGJUN 챌린지 보드</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.min.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
@@ -303,7 +303,7 @@ dl.kv dt{color:var(--muted)} dl.kv dd{margin:0}
 <div class="desk"><div class="win">
   <div class="railwrap">
     <nav class="rail" id="rail" aria-label="주요 메뉴"></nav>
-    <div class="vlabel">BAKJONGJUN 2026 BOARD</div>
+    <div class="vlabel">JONGJUN 2026 BOARD</div>
     <button class="kbtn" type="button" id="kbtn" title="빠른 이동 (⌘K)" aria-label="빠른 이동">⌘K</button>
   </div>
   <aside class="side" id="side" aria-label="탐색"><div class="side-in" id="side-in"></div></aside>
@@ -381,7 +381,7 @@ function renderSide(r){
   }).join("");
   document.getElementById("side-in").innerHTML = `
     <div class="lights"><i></i><i></i><i></i><span class="sp"></span><button class="iconbtn" type="button" data-act="collapse" title="사이드바 접기 ([)" aria-label="사이드바 접기">${svg("side")}</button></div>
-    <div class="me"><div class="avatar">박</div><div><b>${esc(B.meta.channel)}</b><small>${esc(B.meta.start)} → ${esc(B.meta.goal)}</small></div></div>
+    <div class="me"><div class="avatar">J</div><div><b>${esc(B.meta.channel)}</b><small>${esc(B.meta.start)} → ${esc(B.meta.goal)}</small></div></div>
     <div class="grp">Projects</div>
     <div class="nav">${link("", "home", "Dashboard")}${link("projects", "list", "사업 · 파이프라인", P.length)}${link("bot", "bot", "봇 현황")}${link("preseason", "pre", "프리시즌", `${B.preseason.filter(x => x.done).length}/${B.preseason.length}`)}</div>
     <div class="grp">Status</div>
