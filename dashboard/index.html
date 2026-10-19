@@ -6,7 +6,7 @@
 <title>JONGJUN 챌린지 보드</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.min.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
 <style>
 :root{
   --desk:#C4C4C3; --win:#E3E3E2; --panel:#EBEBEA; --card:#F3F3F2; --well:#DEDEDD; --hover:#F8F8F7;
@@ -84,7 +84,7 @@ body.collapsed .side-in{opacity:0;pointer-events:none}
 .tree a.f.on{background:var(--well);box-shadow:var(--sunk);color:var(--ink)}
 
 /* main */
-.main{background:var(--panel);border-radius:18px;box-shadow:var(--hi);min-width:0;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+.main{grid-column:3;grid-row:1;background:var(--panel);border-radius:18px;box-shadow:var(--hi);min-width:0;min-height:0;display:flex;flex-direction:column;overflow:hidden}
 .bar{display:flex;align-items:center;gap:10px;padding:14px 18px 12px;border-bottom:1px solid var(--line);flex:none}
 .bar h1{margin:0;font-size:19px;font-weight:600;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bar .sub{color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
@@ -297,6 +297,9 @@ dl.kv dt{color:var(--muted)} dl.kv dd{margin:0}
   .doc{padding:16px}
 }
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+.yt-card{border-top:3px solid #BD5143}.yt-card p{font-size:12px;line-height:1.75;margin:8px 0}.yt-card .yt-title{font-size:15px;font-weight:600}.yt-card .yt-actions{display:flex;gap:8px;flex-wrap:wrap}.yt-card .yt-actions a{border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:12px}.yt-card a:hover{background:var(--hover)}
+@media(max-width:1023px){.ov>.col{display:contents}.ov>.kpis{order:1}.ov>.listcard{order:2}.ov>.col>.yt-card{order:0}.ov>.col>.card:not(.yt-card){order:3}}
 </style>
 </head>
 <body>
@@ -317,7 +320,7 @@ dl.kv dt{color:var(--muted)} dl.kv dd{margin:0}
 </div></div>
 <div class="toast" id="toast" role="status"></div>
 
-<script src="data.js"></script>
+<script src="data.js?v=20261019-youtube-public"></script>
 <script src="bot.js" onerror="window.BOT=null"></script>
 <script>
 let B = window.BOARD;
@@ -487,7 +490,7 @@ function kpis(){
   const k = (href, t, v, chip, cs, meter) => `<a class="kpi" href="#/${href}"><div class="t">${t}<span>›</span></div><div class="v"><b class="num">${v}</b>${chip ? `<span class="chip" style="${cs || ""}">${chip}</span>` : ""}</div><div class="meter"><i style="width:${meter}%"></i></div></a>`;
   return `<div class="kpis">
     ${k("preseason", "챌린지 일차", day, dl, "--cb:var(--well);--cc:var(--muted)", dp)}
-    ${k("log", "순자산", nw == null ? "—" : (nw/1e4).toLocaleString("ko-KR") + "<small>만</small>", nw == null ? "Day 1부터" : "", "--cb:var(--well);--cc:var(--muted)", nw ? Math.min(100, nw/1e9*100) : 0)}
+    ${k("log", "도전 금액", nw == null ? "—" : (nw/1e4).toLocaleString("ko-KR") + "<small>만</small>", nw == null ? "판정 기준 미정" : "", "--cb:var(--well);--cc:var(--muted)", nw ? Math.min(100, nw/1e9*100) : 0)}
     ${k("status/active", "살아있는 사업", live, `진행 ${P.filter(p => p.status === "active").length}`, "", live/Math.max(P.length,1)*100)}
     ${k("status/dead", "사망 선고", dead, dead ? "판정" : "", "--cb:var(--dead-bg);--cc:var(--dead)", dead/Math.max(P.length,1)*100)}
     ${k("preseason", "프리시즌", `${n}<small>/${pre.length}</small>`, `${Math.round(n/pre.length*100)}%`, "--cb:var(--warn-bg);--cc:var(--warn)", n/pre.length*100)}
@@ -517,11 +520,22 @@ function logMini(){
 }
 
 /* ---------- views ---------- */
+function youtubeCard(){
+  const y = B.youtube; if (!y) return "";
+  return `<section class="card yt-card" aria-label="유튜브 진행 현황">
+    <div class="card-h"><h3>유튜브 · 프리시즌</h3><span class="sp"></span><span class="st active">계정 개설 완료</span></div>
+    <div class="yt-title">${esc(y.name)}</div><div class="muted">${esc(y.handle)}</div>
+    <p><b>확인 완료</b> · 이름·핸들·기존 프로필·배너 적용<br><b>다음 할 일</b> · 배너 3안 선택, 설명·키워드 저장 확인</p>
+    <p class="muted">배너: 1년 안에 10억 벌기<br>키워드 7개: ${esc(y.keywords.join(", "))}</p>
+    <div class="yt-actions"><a href="${esc(y.url)}" target="_blank" rel="noopener">유튜브 채널 ↗</a><a href="#/doc/${encodeURI(y.doc)}">진행 현황 보기</a></div>
+  </section>`;
+}
+
 function overview(){
   return bar("Dashboard", esc(B.meta.tagline)) + `<div class="view enter"><div class="ov">
     ${kpis()}
     ${listCard()}
-    <div class="col">${botMini()}${preMini()}${logMini()}</div>
+    <div class="col">${youtubeCard()}${botMini()}${preMini()}${logMini()}</div>
   </div></div>`;
 }
 function projectsView(fixed){
