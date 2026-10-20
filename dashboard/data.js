@@ -9,7 +9,7 @@ window.BOARD = {
     "goal": "10억 벌기",
     "phase": "preseason",
     "day1": "",
-    "updated": "2026-10-19"
+    "updated": "2026-10-21"
   },
   "ledger": {
     "net_worth": null,
@@ -344,6 +344,11 @@ window.BOARD = {
     }
   ],
   "log": [
+    {
+      "date": "2026-10-21",
+      "who": "Codex",
+      "text": "코인 901개 1시간봉으로 '마켓메이커 펌핑(거래대금 급증→스퀴즈→덤프)' 전수검사. 펌핑 전 미리 보이는 신호 없음. 급증 시작 뒤 +50% 확률은 1.7%(평소 0.5%)로 높지만 비용 후 거래하면 손해. 봇 규칙 안 바꿈 (research_pump_hourly.md)"
+    },
     {
       "date": "2026-10-19",
       "who": "Codex",
