@@ -9,7 +9,7 @@ window.BOARD = {
     "goal": "10억 벌기",
     "phase": "preseason",
     "day1": "",
-    "updated": "2026-10-21"
+    "updated": "2026-10-22"
   },
   "ledger": {
     "net_worth": null,
@@ -344,6 +344,11 @@ window.BOARD = {
     }
   ],
   "log": [
+    {
+      "date": "2026-10-22",
+      "who": "Codex",
+      "text": "트레이딩뷰 유명 지표 31종(슈퍼트렌드, UT Bot, WaveTrend, 스퀴즈 모멘텀, 일목, SMC, 로렌츠 ML 등) 기본 설정 그대로 코인 742종에 검증(research_tv_indicators.md). 우연 걸러내기 통과 0개. 1등 VW-MACD(최근 연 72%)는 이전 기간 연 -17%라 우연. 전체 중앙값은 계열 모두 마이너스. 봇 변경 없음"
+    },
     {
       "date": "2026-10-21",
       "who": "Claude",
