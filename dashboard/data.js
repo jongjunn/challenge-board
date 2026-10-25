@@ -9,7 +9,7 @@ window.BOARD = {
     "goal": "10억 벌기",
     "phase": "preseason",
     "day1": "",
-    "updated": "2026-10-24"
+    "updated": "2026-10-25"
   },
   "ledger": {
     "net_worth": null,
@@ -344,6 +344,7 @@ window.BOARD = {
     }
   ],
   "log": [
+    {"date": "2026-10-25", "who": "Claude", "text": "Token Usage 토큰 누수 보고서를 '진단 → 처방'으로 개편: 자동 요약 시점·도구 출력 상한을 지난 7일 기록에 적용해 본 감소량을 보여주고 설정 한 줄로 적용·되돌리기 (이 맥 기준 Claude 300k 요약 −46%, Codex 4k 출력 상한 −29%, 추정). 쉬었다 이어간 대화의 캐시 재작성 습관 카드 추가, 프롬프트 복사 제거. Codex 딥리서치(토큰 낭비 15가지)를 Claude가 실행 파일·기록 숫자로 검증. 보고서 분석 메모리 2GB → 60MB, Codex 분석 속도 문제(정규식 반복 생성) 수정"},
     {
       "date": "2026-10-24",
       "who": "Codex",
