@@ -302,6 +302,9 @@ dl.kv dt{color:var(--muted)} dl.kv dd{margin:0}
 .seg a{font-size:11.5px;padding:4px 9px;border-radius:7px;color:var(--muted);white-space:nowrap;transition:background .15s,color .15s}
 .ct-rule{font-size:11.5px;margin:-4px 0 0}
 .seg a.on{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+button.chk{width:100%;text-align:left;cursor:pointer;background:none;border:0;border-top:1px solid var(--line);font:inherit;color:inherit}
+button.chk:first-of-type{border-top:0}
+button.chk:hover span{color:var(--ink)}
 .ct{display:flex;flex-direction:column;gap:12px;max-width:880px}
 .ct .tabs a{padding:6px 0 8px;font-size:13px;color:var(--muted);white-space:nowrap;transition:color .15s}
 .ct .tabs a.on{color:var(--ink);font-weight:500}
@@ -318,6 +321,13 @@ dl.kv dt{color:var(--muted)} dl.kv dd{margin:0}
 .ct-body .tbl td{white-space:normal;vertical-align:top}.ct-body .tbl td.num{white-space:nowrap}
 .ct-script{background:var(--well);box-shadow:var(--sunk);border-radius:11px;padding:10px 12px;font-size:13px;line-height:1.75}
 .ct-script p{margin:0}
+.sb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:12px}
+.sb{margin:0;display:flex;flex-direction:column;gap:6px;min-width:0}
+.sb svg{width:100%;height:auto;display:block;border-radius:9px;box-shadow:var(--hi)}
+.sb figcaption{font-size:11px;line-height:1.5;color:var(--muted)}
+.sb figcaption b{color:var(--ink);font-weight:600}
+.sb figcaption span{display:block;color:var(--ink-2)}
+.ct-legend{font-size:11px;margin:8px 0 0}
 @media(max-width:560px){.ct-item summary{grid-template-columns:auto 1fr}.ct-item summary .st{grid-column:2;justify-self:start}}
 @media(max-width:1023px){.ov>.col{display:contents}.ov>.kpis{order:1}.ov>.listcard{order:2}.ov>.col>.yt-card{order:0}.ov>.col>.card:not(.yt-card){order:3}}
 </style>
@@ -351,6 +361,9 @@ const isDate = s => /^\d{4}-\d{2}-\d{2}$/.test(s || "");
 const md = s => { const [,m,d] = String(s).split("-"); return `${+m}.${+d}`; };
 const fmt = v => v == null || v === "" ? "—" : Number(v).toLocaleString("en-US", {maximumFractionDigits: 2});
 const store = {get(k, d){ try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } }, set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }};
+// ponytail: 체크는 브라우저(localStorage)에만 저장. 기기 간 공유가 필요하면 쓰기 가능한 저장소가 있어야 함
+const PRE0 = Object.fromEntries(B.preseason.map(x => [x.item, !!x.done]));
+{ const o = store.get("pre", {}); B.preseason.forEach(x => { if (x.item in o) x.done = o[x.item]; }); }
 const I = {
   home:'<path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/>',
   biz:'<rect x="4" y="7" width="16" height="12" rx="2"/><path d="M9 7V5h6v2"/>',
@@ -611,10 +624,29 @@ function preseasonView(){
   const pre = B.preseason, n = pre.filter(x => x.done).length;
   return bar("프리시즌", "Day 1 전에 끝낼 세팅 · 실적 집계는 Day 1부터") + `<div class="view enter"><section class="card" style="max-width:720px">
     <div class="card-h"><h3>진행률</h3><span class="sp"></span><span class="num">${n}/${pre.length}</span></div><div class="progress"><i style="width:${n/pre.length*100}%"></i></div>
-    ${pre.map(x => `<div class="chk ${x.done ? "done" : ""}"><i>${x.done ? "✓" : ""}</i><span>${esc(x.item)}</span></div>`).join("")}
-    <p class="muted" style="font-size:11.5px;margin:10px 0 0">체크는 dashboard/data.js의 preseason에서 done을 true로 바꾸면 반영돼요.</p></section></div>`;
+    ${pre.map((x, i) => `<button type="button" class="chk ${x.done ? "done" : ""}" data-pre="${i}" aria-pressed="${!!x.done}"><i>${x.done ? "✓" : ""}</i><span>${esc(x.item)}</span></button>`).join("")}
+    <p class="muted" style="font-size:11.5px;margin:10px 0 0">누르면 체크돼요. 이 브라우저에 저장되고, 다른 기기·공개 페이지에도 남기려면 data.js에 반영해야 해요.</p></section></div>`;
 }
 const CTS = {confirmed:["active","확정"], draft:["waiting","초안"], idea:["paused","아이디어"]};
+/* 콘티 그림: 9:16 화면에 장소(①벽 낮 ②방 밤 ③책상) · 샷 크기(W/M/C) · 자막 위치를 그린다 */
+const SB_BG = {"①":["#ECEAE5","#F7F5F0"], "②":["#24232B","#3A3542"], "③":["#D8D4CC","#E6E2DA"]};
+const SB_SHOT = {W:{r:8, cy:46, w:30}, M:{r:12, cy:52, w:46}, C:{r:17, cy:62, w:66}};
+function sbWrap(t){ const out = []; t.split(" / ").forEach(part => { let line = ""; part.split(" ").forEach(w => { if ((line + " " + w).trim().length > 11 && line){ out.push(line); line = w; } else line = (line + " " + w).trim(); }); if (line) out.push(line); }); return out; }
+function storyboard(c, badge, i){
+  const [b0, b1] = SB_BG[c.spot] || SB_BG["①"], night = c.spot === "②", mail = /메일/.test(c.shot);
+  const sh = SB_SHOT[(c.shot.match(/\b([WMC])\b/) || [])[1] || (mail ? "C" : "M")], ink = night ? "#0E0D12" : "#3B3D44";
+  const g = "g" + i;
+  let bg = `<defs><linearGradient id="${g}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${b1}"/><stop offset="1" stop-color="${b0}"/></linearGradient></defs><rect width="90" height="160" fill="url(#${g})"/>`;
+  if (c.spot === "①") bg += `<rect x="0" y="0" width="14" height="160" fill="#FFFFFF" opacity=".55"/>`;
+  if (night) bg += `<circle cx="74" cy="56" r="26" fill="#F2B867" opacity=".22"/><rect x="72" y="58" width="4" height="40" fill="#5A5160"/><path d="M66 58h16l-4-10h-8z" fill="#E9B46A"/>`;
+  if (c.spot === "③") bg += `<rect x="0" y="122" width="90" height="38" fill="#B9A992"/><rect x="58" y="104" width="26" height="18" rx="1.5" fill="#2F3138"/><rect x="60" y="106" width="22" height="13" fill="#9FB3C8"/>`;
+  const person = mail ? "" : `<circle cx="45" cy="${sh.cy}" r="${sh.r}" fill="${ink}"/><path d="M${45 - sh.w/2} 160 C${45 - sh.w/2} ${sh.cy + sh.r + 10} ${45 - sh.w/4} ${sh.cy + sh.r + 4} 45 ${sh.cy + sh.r + 4} C${45 + sh.w/4} ${sh.cy + sh.r + 4} ${45 + sh.w/2} ${sh.cy + sh.r + 10} ${45 + sh.w/2} 160Z" fill="${ink}"/>`;
+  const screen = mail ? `<rect x="8" y="34" width="74" height="70" rx="3" fill="#2F3138"/><rect x="11" y="37" width="68" height="62" fill="#F4F5F7"/><rect x="15" y="42" width="30" height="4" fill="#C9CDD4"/><rect x="15" y="50" width="56" height="3" fill="#B7BCC5"/><rect x="15" y="56" width="50" height="3" fill="#B7BCC5"/><rect x="15" y="64" width="60" height="8" fill="#5D6270"/><text x="45" y="69.6" font-size="4" fill="#fff" text-anchor="middle">이름 · 회사명 가림</text><rect x="15" y="78" width="44" height="3" fill="#B7BCC5"/><rect x="15" y="84" width="52" height="3" fill="#B7BCC5"/>` : "";
+  const lines = sbWrap(c.cap || ""), big = i === 0, fs = big ? 9 : 6, y0 = big ? 108 : 120 - (lines.length - 1) * 4;
+  const cap = lines.map((l, j) => `<text x="45" y="${y0 + j * (fs + 2)}" font-size="${fs}" font-weight="700" fill="#FFFFFF" stroke="#111" stroke-width="${big ? 1.6 : 1.2}" paint-order="stroke" text-anchor="middle">${esc(l)}</text>`).join("");
+  const top = badge ? `<rect x="10" y="10" width="70" height="10" rx="5" fill="#000" opacity=".55"/><text x="45" y="16.8" font-size="4.6" fill="#fff" text-anchor="middle">${esc(badge)}</text>` : "";
+  return `<svg viewBox="0 0 90 160" role="img" aria-label="${esc(c.t)}초 콘티: ${esc(c.spot)} ${esc(c.shot)}">${bg}${person}${screen}${top}${cap}<rect x=".5" y=".5" width="89" height="159" rx="6" fill="none" stroke="#000" stroke-opacity=".15"/></svg>`;
+}
 function contentView(r){
   const all = B.content?.items || [], pf = r[1] === "yt" ? "yt" : "ig", fm = r[2] === "long" ? "long" : "short";
   const n = (p, f) => all.filter(x => x.platform === p && (!f || x.format === f)).length;
@@ -698,8 +730,9 @@ function refreshRows(){
 
 /* ---------- events (delegated) ---------- */
 document.addEventListener("click", e => {
-  const t = e.target.closest("[data-p],[data-tab],[data-bt],[data-line],[data-act],[data-folder],.pal-item");
+  const t = e.target.closest("[data-p],[data-tab],[data-bt],[data-line],[data-act],[data-folder],[data-pre],.pal-item");
   if (!t) return;
+  if (t.dataset.pre){ const x = B.preseason[+t.dataset.pre], o = store.get("pre", {}); x.done = !x.done; if (x.done === PRE0[x.item]) delete o[x.item]; else o[x.item] = x.done; store.set("pre", o); const v = document.querySelector(".main .view"), y = v?.scrollTop; render(); const nv = document.querySelector(".main .view"); if (nv) nv.scrollTop = y; return; }
   const {r} = parseHash(), path = r[0] === "p" ? "" : r.join("/");
   if (t.dataset.p){ go(path, state.sel === t.dataset.p ? null : t.dataset.p); }
   else if (t.dataset.tab){ state.tab = t.dataset.tab; const card = t.closest(".listcard"); card.querySelectorAll("[data-tab]").forEach(b => { b.classList.toggle("on", b === t); b.setAttribute("aria-selected", b === t); }); moveInd(card); refreshRows(); }
