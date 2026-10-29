@@ -561,7 +561,7 @@ function youtubeCard(){
     <div class="yt-title">${esc(y.name)}</div><div class="muted">${esc(y.handle)}</div>
     <p><b>확인 완료</b> · 이름·핸들·기존 프로필·배너 적용<br><b>다음 할 일</b> · 배너 3안 선택, 설명·키워드 저장 확인</p>
     <p class="muted">배너: 1년 안에 10억 벌기<br>키워드 7개: ${esc(y.keywords.join(", "))}</p>
-    <div class="yt-actions"><a href="${esc(y.url)}" target="_blank" rel="noopener">유튜브 채널 ↗</a><a href="#/doc/${encodeURI(y.doc)}">진행 현황 보기</a></div>
+    <div class="yt-actions"><a href="${esc(y.url)}" target="_blank" rel="noopener">유튜브 채널 ↗</a>${B.instagram ? `<a href="${esc(B.instagram.url)}" target="_blank" rel="noopener">인스타그램 ${esc(B.instagram.handle)} ↗</a>` : ""}<a href="#/doc/${encodeURI(y.doc)}">진행 현황 보기</a></div>
   </section>`;
 }
 
@@ -630,7 +630,7 @@ function preseasonView(){
 const CTS = {confirmed:["active","확정"], draft:["waiting","초안"], idea:["paused","아이디어"]};
 /* 콘티 그림: 9:16 화면에 장소(①벽 낮 ②방 밤 ③책상) · 샷 크기(W/M/C) · 자막 위치를 그린다 */
 const SB_BG = {"①":["#ECEAE5","#F7F5F0"], "②":["#24232B","#3A3542"], "③":["#D8D4CC","#E6E2DA"]};
-const SB_SHOT = {W:{r:8, cy:46, w:30}, M:{r:12, cy:52, w:46}, C:{r:17, cy:62, w:66}};
+const SB_SHOT = {W:{r:8, cy:44, w:40}, M:{r:12, cy:52, w:58}, C:{r:17, cy:62, w:78}};
 function sbWrap(t){ const out = []; t.split(" / ").forEach(part => { let line = ""; part.split(" ").forEach(w => { if ((line + " " + w).trim().length > 11 && line){ out.push(line); line = w; } else line = (line + " " + w).trim(); }); if (line) out.push(line); }); return out; }
 function storyboard(c, badge, i){
   const [b0, b1] = SB_BG[c.spot] || SB_BG["①"], night = c.spot === "②", mail = /메일/.test(c.shot);
@@ -660,6 +660,7 @@ function contentView(r){
       <div class="ct-body">
         ${x.script ? `<h4>대사</h4><div class="ct-script">${x.script.map(s => `<p>${esc(s)}</p>`).join("")}${x.end ? `<p class="muted">${esc(x.end)}</p>` : ""}</div>` : ""}
         ${x.spots ? `<h4>집 안 3곳</h4><div class="scrollx"><table class="tbl"><tr><th>장면</th><th>위치</th><th>빛</th><th>맡는 말</th></tr>${x.spots.map(s => `<tr><td><b>${esc(s.spot)}</b></td><td>${esc(s.where)}</td><td>${esc(s.light)}</td><td>${esc(s.role)}</td></tr>`).join("")}</table></div>` : ""}
+        ${x.cuts ? `<h4>콘티</h4><div class="sb-grid">${x.cuts.map((c, j) => `<figure class="sb">${storyboard(c, x.badge, j)}<figcaption><b class="num">${esc(c.t)}초</b> · ${esc(c.spot)} ${esc(c.shot)}<span>${esc(c.say)}</span></figcaption></figure>`).join("")}</div><p class="ct-legend muted">① 빈 벽 · 낮 &nbsp;② 방 · 밤 스탠드 &nbsp;③ 책상 · 노트북 &nbsp;|&nbsp; W 무릎 위 · M 허리 위 · C 가슴 위 &nbsp;|&nbsp; 흰 글자 = 자막 위치</p>` : ""}
         ${x.cuts ? `<h4>컷</h4><div class="scrollx"><table class="tbl"><tr><th>초</th><th>장면·샷</th><th>말</th><th>자막</th></tr>${x.cuts.map(c => `<tr><td class="num">${esc(c.t)}</td><td><b>${esc(c.spot)}</b> ${esc(c.shot)}</td><td>${esc(c.say)}</td><td>${esc(c.sub)}</td></tr>`).join("")}</table></div>` : ""}
         ${x.flow ? `<h4>흐름</h4><div class="scrollx"><table class="tbl"><tr><th>#</th><th>장면</th><th>역할</th></tr>${x.flow.map((f, j) => `<tr><td class="num">${j + 1}</td><td>${esc(f[0])}</td><td>${esc(f[1])}</td></tr>`).join("")}</table></div>` : ""}
         ${x.notes ? `<h4>메모</h4><ul>${li(x.notes)}</ul>` : ""}
