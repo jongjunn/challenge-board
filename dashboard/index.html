@@ -299,6 +299,26 @@ dl.kv dt{color:var(--muted)} dl.kv dd{margin:0}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 
 .yt-card{border-top:3px solid #BD5143}.yt-card p{font-size:12px;line-height:1.75;margin:8px 0}.yt-card .yt-title{font-size:15px;font-weight:600}.yt-card .yt-actions{display:flex;gap:8px;flex-wrap:wrap}.yt-card .yt-actions a{border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:12px}.yt-card a:hover{background:var(--hover)}
+.seg a{font-size:11.5px;padding:4px 9px;border-radius:7px;color:var(--muted);white-space:nowrap;transition:background .15s,color .15s}
+.ct-rule{font-size:11.5px;margin:-4px 0 0}
+.seg a.on{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.ct{display:flex;flex-direction:column;gap:12px;max-width:880px}
+.ct .tabs a{padding:6px 0 8px;font-size:13px;color:var(--muted);white-space:nowrap;transition:color .15s}
+.ct .tabs a.on{color:var(--ink);font-weight:500}
+.ct-list{display:flex;flex-direction:column;gap:10px}
+.ct-item{padding:0}
+.ct-item summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:13px 16px}
+.ct-item summary::-webkit-details-marker{display:none}
+.ct-item summary:focus-visible{outline:2px solid var(--ink-2);outline-offset:-2px;border-radius:16px}
+.ct-code{font-size:12px;font-weight:600;background:var(--well);box-shadow:var(--sunk);border-radius:7px;padding:3px 8px}
+.ct-name{min-width:0}.ct-name b{display:block;font-size:13.5px;font-weight:600}.ct-name small{display:block;font-size:11.5px;color:var(--muted)}
+.ct-body{padding:0 16px 16px;border-top:1px solid var(--line)}
+.ct-body h4{font-size:11px;font-weight:600;color:var(--muted);margin:14px 0 6px}
+.ct-body ul{margin:0;padding-left:18px;font-size:12.5px;line-height:1.7}
+.ct-body .tbl td{white-space:normal;vertical-align:top}.ct-body .tbl td.num{white-space:nowrap}
+.ct-script{background:var(--well);box-shadow:var(--sunk);border-radius:11px;padding:10px 12px;font-size:13px;line-height:1.75}
+.ct-script p{margin:0}
+@media(max-width:560px){.ct-item summary{grid-template-columns:auto 1fr}.ct-item summary .st{grid-column:2;justify-self:start}}
 @media(max-width:1023px){.ov>.col{display:contents}.ov>.kpis{order:1}.ov>.listcard{order:2}.ov>.col>.yt-card{order:0}.ov>.col>.card:not(.yt-card){order:3}}
 </style>
 </head>
@@ -320,7 +340,7 @@ dl.kv dt{color:var(--muted)} dl.kv dd{margin:0}
 </div></div>
 <div class="toast" id="toast" role="status"></div>
 
-<script src="data.js?v=20261019-youtube-public"></script>
+<script src="data.js?v=20261029-content"></script>
 <script src="bot.js" onerror="window.BOT=null"></script>
 <script>
 let B = window.BOARD;
@@ -337,6 +357,7 @@ const I = {
   bot:'<path d="M5 16l4-5 3 3 6-7"/><path d="M15 7h3v3"/>',
   pre:'<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M8 13l3 3 5-6"/>',
   log:'<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>',
+  video:'<rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3"/>',
   doc:'<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/>',
   list:'<circle cx="6" cy="7" r="1.5"/><path d="M10 7h9M10 12h9M10 17h9"/><circle cx="6" cy="12" r="1.5"/><circle cx="6" cy="17" r="1.5"/>',
   dot:'<circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.5"/>',
@@ -365,10 +386,10 @@ function toast(msg){ const t = document.getElementById("toast"); t.textContent =
 
 /* ---------- shell ---------- */
 function renderRail(r){
-  const items = [["", "home", "대시보드"], ["projects", "biz", "사업 · 파이프라인"], ["bot", "bot", "봇 현황"], ["preseason", "pre", "프리시즌"], ["log", "log", "기록"], ["doc/" + (B.docs?.[0]?.files?.[0]?.path || ""), "doc", "문서"]];
+  const items = [["", "home", "대시보드"], ["projects", "biz", "사업 · 파이프라인"], ["content", "video", "콘텐츠"], ["bot", "bot", "봇 현황"], ["preseason", "pre", "프리시즌"], ["log", "log", "기록"], ["doc/" + (B.docs?.[0]?.files?.[0]?.path || ""), "doc", "문서"]];
   const cur = r.join("/");
   document.getElementById("rail").innerHTML = `<div class="mark" aria-hidden="true">✳</div>` + items.map(([h, ic, t]) => {
-    const on = h === "" ? cur === "" : h.startsWith("doc/") ? r[0] === "doc" : (cur === h || (h === "projects" && r[0] === "status"));
+    const on = h === "" ? cur === "" : h.startsWith("doc/") ? r[0] === "doc" : (cur === h || (h === "projects" && r[0] === "status") || (h === "content" && r[0] === "content"));
     return `<a href="#/${h}" class="${on ? "on" : ""}" data-tip="${t}" aria-label="${t}">${svg(ic)}</a>`;
   }).join("");
 }
@@ -386,7 +407,7 @@ function renderSide(r){
     <div class="lights"><i></i><i></i><i></i><span class="sp"></span><button class="iconbtn" type="button" data-act="collapse" title="사이드바 접기 ([)" aria-label="사이드바 접기">${svg("side")}</button></div>
     <div class="me"><div class="avatar">J</div><div><b>${esc(B.meta.channel)}</b><small>${esc(B.meta.start)} → ${esc(B.meta.goal)}</small></div></div>
     <div class="grp">Projects</div>
-    <div class="nav">${link("", "home", "Dashboard")}${link("projects", "list", "사업 · 파이프라인", P.length)}${link("bot", "bot", "봇 현황")}${link("preseason", "pre", "프리시즌", `${B.preseason.filter(x => x.done).length}/${B.preseason.length}`)}</div>
+    <div class="nav">${link("", "home", "Dashboard")}${link("projects", "list", "사업 · 파이프라인", P.length)}<a href="#/content" class="${r[0] === "content" ? "on" : ""}">${svg("video")}<span>콘텐츠</span><span class="cnt num">${(B.content?.items || []).length}</span></a>${link("bot", "bot", "봇 현황")}${link("preseason", "pre", "프리시즌", `${B.preseason.filter(x => x.done).length}/${B.preseason.length}`)}</div>
     <div class="grp">Status</div>
     <div class="nav">${link("status/active", "dot", "진행중", cnt("active"))}${link("status/waiting", "wait", "대기", cnt("waiting"))}${link("status/dead", "x", "사망 선고", cnt("dead"))}</div>
     <div class="grp">History</div>
@@ -593,6 +614,28 @@ function preseasonView(){
     ${pre.map(x => `<div class="chk ${x.done ? "done" : ""}"><i>${x.done ? "✓" : ""}</i><span>${esc(x.item)}</span></div>`).join("")}
     <p class="muted" style="font-size:11.5px;margin:10px 0 0">체크는 dashboard/data.js의 preseason에서 done을 true로 바꾸면 반영돼요.</p></section></div>`;
 }
+const CTS = {confirmed:["active","확정"], draft:["waiting","초안"], idea:["paused","아이디어"]};
+function contentView(r){
+  const all = B.content?.items || [], pf = r[1] === "yt" ? "yt" : "ig", fm = r[2] === "long" ? "long" : "short";
+  const n = (p, f) => all.filter(x => x.platform === p && (!f || x.format === f)).length;
+  const seg = `<div class="seg" role="tablist">${[["ig","인스타그램"],["yt","유튜브"]].map(([k,l]) => `<a role="tab" href="#/content/${k}/${fm}" aria-selected="${pf === k}" class="${pf === k ? "on" : ""}">${l} <span class="num">${n(k)}</span></a>`).join("")}</div>`;
+  const tabs = `<div class="tabs" role="tablist">${[["short","숏폼"],["long","롱폼"]].map(([k,l]) => `<a role="tab" href="#/content/${pf}/${k}" aria-selected="${fm === k}" class="${fm === k ? "on" : ""}">${l} <span class="num muted">${n(pf, k)}</span></a>`).join("")}<span class="ind"></span></div>`;
+  const list = all.filter(x => x.platform === pf && x.format === fm);
+  const li = a => (a || []).map(x => `<li>${esc(x)}</li>`).join("");
+  const item = (x, i) => { const [cls, lab] = CTS[x.status] || ["paused", x.status];
+    return `<details class="card ct-item" ${i === 0 && x.status === "confirmed" ? "open" : ""}>
+      <summary><span class="ct-code num">${esc(x.code)}</span><span class="ct-name"><b>${esc(x.name)}</b><small>${esc(x.meta)}</small></span><span class="st ${cls}">${lab}</span></summary>
+      <div class="ct-body">
+        ${x.script ? `<h4>대사</h4><div class="ct-script">${x.script.map(s => `<p>${esc(s)}</p>`).join("")}${x.end ? `<p class="muted">${esc(x.end)}</p>` : ""}</div>` : ""}
+        ${x.spots ? `<h4>집 안 3곳</h4><div class="scrollx"><table class="tbl"><tr><th>장면</th><th>위치</th><th>빛</th><th>맡는 말</th></tr>${x.spots.map(s => `<tr><td><b>${esc(s.spot)}</b></td><td>${esc(s.where)}</td><td>${esc(s.light)}</td><td>${esc(s.role)}</td></tr>`).join("")}</table></div>` : ""}
+        ${x.cuts ? `<h4>컷</h4><div class="scrollx"><table class="tbl"><tr><th>초</th><th>장면·샷</th><th>말</th><th>자막</th></tr>${x.cuts.map(c => `<tr><td class="num">${esc(c.t)}</td><td><b>${esc(c.spot)}</b> ${esc(c.shot)}</td><td>${esc(c.say)}</td><td>${esc(c.sub)}</td></tr>`).join("")}</table></div>` : ""}
+        ${x.flow ? `<h4>흐름</h4><div class="scrollx"><table class="tbl"><tr><th>#</th><th>장면</th><th>역할</th></tr>${x.flow.map((f, j) => `<tr><td class="num">${j + 1}</td><td>${esc(f[0])}</td><td>${esc(f[1])}</td></tr>`).join("")}</table></div>` : ""}
+        ${x.notes ? `<h4>메모</h4><ul>${li(x.notes)}</ul>` : ""}
+        ${x.todo ? `<h4>남은 것</h4><ul>${li(x.todo)}</ul>` : ""}
+      </div></details>`; };
+  const empty = pf === "ig" && fm === "long" ? "인스타는 릴스만 올려요. 긴 영상은 유튜브 롱폼으로." : "아직 없어요";
+  return bar("콘텐츠", "플랫폼 → 형식 → 이름", seg) + `<div class="view enter"><div class="ct">${tabs}<p class="muted ct-rule">이름 규칙 · ${esc(B.content?.rule || "")}</p><div class="ct-list">${list.map(item).join("") || `<div class="empty">${empty}</div>`}</div></div></div>`;
+}
 function logView(){
   return bar("기록", "누가 언제 무엇을 바꿨나") + `<div class="view enter"><section class="card" style="max-width:820px">${B.log.map(l => `<div class="logrow"><span class="date num">${md(l.date)}</span><span class="who">${esc(l.who)}</span><span>${esc(l.text)}</span></div>`).join("")}</section></div>`;
 }
@@ -634,7 +677,7 @@ function renderDetail(){
 
 /* ---------- render ---------- */
 function moveInd(root){
-  root.querySelectorAll(".tabs").forEach(t => { const on = t.querySelector("button.on"), ind = t.querySelector(".ind"); if (on && ind){ ind.style.left = on.offsetLeft + "px"; ind.style.width = on.offsetWidth + "px"; } });
+  root.querySelectorAll(".tabs").forEach(t => { const on = t.querySelector(".on"), ind = t.querySelector(".ind"); if (on && ind){ ind.style.left = on.offsetLeft + "px"; ind.style.width = on.offsetWidth + "px"; } });
 }
 function render(){
   const {r, sel} = parseHash(), main = document.getElementById("main");
@@ -642,7 +685,7 @@ function render(){
   renderRail(r); renderSide(r);
   document.body.classList.remove("nav");
   if (r[0] === "doc") docView(r.slice(1).join("/"));
-  else main.innerHTML = r[0] === "projects" ? projectsView() : r[0] === "status" ? projectsView(r[1]) : r[0] === "bot" ? botView()
+  else main.innerHTML = r[0] === "projects" ? projectsView() : r[0] === "status" ? projectsView(r[1]) : r[0] === "content" ? contentView(r) : r[0] === "bot" ? botView()
     : r[0] === "preseason" ? preseasonView() : r[0] === "log" ? logView() : r[0] === "p" ? (state.sel = r[1], overview()) : overview();
   bindCharts(main); moveInd(main);
   renderDetail();
@@ -681,7 +724,7 @@ window.addEventListener("resize", () => moveInd(document));
 /* ---------- command palette ---------- */
 let palIdx = 0;
 function palItems(){
-  const views = [["#/", "Dashboard", "화면"], ["#/projects", "사업 · 파이프라인", "화면"], ["#/bot", "봇 현황", "화면"], ["#/preseason", "프리시즌", "화면"], ["#/log", "기록", "화면"]];
+  const views = [["#/", "Dashboard", "화면"], ["#/projects", "사업 · 파이프라인", "화면"], ["#/content", "콘텐츠", "화면"], ...(B.content?.items || []).map(x => [`#/content/${x.platform}/${x.format}`, `${x.code} ${x.name}`, "콘텐츠"]), ["#/bot", "봇 현황", "화면"], ["#/preseason", "프리시즌", "화면"], ["#/log", "기록", "화면"]];
   const projects = B.projects.map(p => [`#/?p=${encodeURIComponent(p.id)}`, p.name, STN[p.status] || "사업"]);
   const docs = (B.docs || []).flatMap(g => g.files.map(f => [`#/doc/${encodeURI(f.path)}`, f.title, "문서"]));
   const q = document.getElementById("pal-q").value.trim().toLowerCase();
